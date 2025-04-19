@@ -48,7 +48,8 @@
 </Header>
 
 <div class="background" aria-hidden="true">
-	<img src={image(card.attributes.printing_ids[0])} />
+	<!-- TODO: alt value -->
+	<img src={image(card.attributes.printing_ids[0])} alt="a" />
 </div>
 
 <Wrapper class="grid gap-12">
@@ -61,6 +62,7 @@
 				<div class="grid grid-cols-4">
 					{#each printings[0].attributes.faces as face}
 						{face.flavor}
+						<!-- TODO: alt value -->
 						<img src={face.images.nrdb_classic.large} alt="a" />
 					{/each}
 				</div>
