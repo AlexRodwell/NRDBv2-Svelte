@@ -305,3 +305,20 @@ export type Rulings = {
         self: string;
     };
 }
+
+export type CardType = {
+    id: string;
+    type: "card_types",
+    attributes: {
+        name: string;
+        updated_at: string;
+    },
+    relationships: {
+        side: Relationship;
+        cards: Relationship;
+        printings: Relationship;
+    },
+    links: {
+        self: string;
+    };
+}

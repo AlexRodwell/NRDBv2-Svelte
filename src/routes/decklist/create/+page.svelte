@@ -3,7 +3,7 @@
     import Icon from "$lib/components/icons/Icon.svelte";
     import Button from "$lib/components/Button.svelte";
     import Card from "$lib/components/Card.svelte";
-    import type { Card as TCard, CardTypeIds} from '$lib/types';
+    import type { Card as TCard, SidesIds, CardType, CardTypeIds, Faction } from '$lib/types';
     import { page } from '$app/state';
     import Fuse from 'fuse.js'
     import { locale } from "$lib/i18n";
@@ -11,6 +11,8 @@
 	import Influence from "$lib/components/Influence.svelte";
     import { DatePicker, ToggleGroup, Tabs, DropdownMenu } from "bits-ui";
 	import { onMount } from "svelte";
+    import Debug from '$lib/components/Debug.svelte';
+    import { tooltip } from "$lib/actions";
 
     interface Props {
 		data: any;
@@ -19,55 +21,10 @@
 	let { data }: Props = $props();
 
     let identity = $state<TCard | null>(data?.identity?.id ? data.identity : null);
-    let side = $state<TCard['attributes']['side_id'] | null>(data?.identity?.attributes?.side_id ?? data.side ?? null);
+    let side = $state<TCard['attributes']['side_id'] | null>(data.side ?? null);
 
-    let filtered_cards = $state([]);
-    let filtered_types = $state([]);
-    
-    $effect(() => {
-        if (side) {
-            filtered_cards = side === 'corp' ? 
-                page.data.cards.filter(card => 
-                    card.attributes.card_type_id !== 'runner_identity' && 
-                    card.attributes.card_type_id !== 'corp_identity' &&
-                    card.attributes.card_type_id !== 'event' &&
-                    card.attributes.card_type_id !== 'hardware' &&
-                    card.attributes.card_type_id !== 'resource' &&
-                    card.attributes.card_type_id !== 'icebreak' &&
-                    card.attributes.card_type_id !== 'program' &&
-                    card.attributes.side_id	 !== 'corp'
-                ) : page.data.cards.filter(card => 
-                    card.attributes.card_type_id !== 'runner_identity' && 
-                    card.attributes.card_type_id !== 'corp_identity' &&
-                    card.attributes.card_type_id !== 'agenda' &&
-                    card.attributes.card_type_id !== 'asset' &&
-                    card.attributes.card_type_id !== 'operation' &&
-                    card.attributes.card_type_id !== 'upgrade' &&
-                    card.attributes.card_type_id !== 'barrier' &&
-                    card.attributes.card_type_id !== 'sentry' &&
-                    card.attributes.side_id	 !== 'runner'
-                )
-
-        filtered_types = side === 'corp' ? 
-            page.data.card_types.filter(type => 
-                type.id !== 'event' &&
-                type.id !== 'hardware' &&
-                type.id !== 'resource' &&
-                type.id !== 'icebreak' &&
-                type.id !== 'program'
-            ) : page.data.card_types.filter(type => 
-                type.id !== 'runner_identity' && 
-                type.id !== 'corp_identity' &&
-                type.id !== 'agenda' &&
-                type.id !== 'asset' &&
-                type.id !== 'operation' &&
-                type.id !== 'upgrade' &&
-                type.id !== 'barrier' &&
-                type.id !== 'sentry' &&
-                type.id !== 'side_id' // Added filter for side_id
-            )
-        }
-    })
+    let filtered_cards = $state<TCard[] | null>(null);
+    let filtered_types = $state<CardType[] | null>(null);
 
     const reset = () => {
         identity = null;
@@ -80,25 +37,29 @@
         });
         window.history.pushState({}, '', url);
     }
-    
-    let fuse = new Fuse(filtered_cards, {
-        threshold: 0.3,
-        keys: [
-            "id",
-            "type",
-            "attributes.title"
-        ]
-    });
 
-    let results = $state<TCard[]>($state.snapshot(filtered_cards.slice(0, 30)));
+    let results = $state<TCard[]>([]);
 
-    const search = (str: string) => {
-        if (str.length === 0) {
-            results = $state.snapshot(filtered_cards.slice(0, 30));
-            return;
-        }
+    const search = (str: string = '') => {
+        // if (str.length === 0) {
+        //     results = $state.snapshot(filtered_cards.slice(0, 30));
+        //     return;
+        // }
 
-		const fuse_result: { item: TCard }[] = fuse.search(str);
+        console.log('Searching for:', {
+            $or: [
+                { title: str, },
+                ...filters.factions.map(faction => ({ faction_id: faction }))
+            ]
+        });
+        const fuse_result: { item: TCard }[] = fuse.search({
+            $or: [
+                { title: str, },
+                ...filters.factions.map(faction => ({ faction_id: faction })),
+                ...filters.types.map(faction => ({ card_type_id: faction }))
+            ]
+        });
+        
 		results = fuse_result.map((result) => result.item);
 	}
 
@@ -107,10 +68,10 @@
         types: string[];
     }>({
         factions: [identity?.attributes.faction_id],
-        types: ['agenda']
+        types: []
     });
 
-    let deck = $state<{
+    let deck = $derived<{
         cards: { 
             [key: CardTypeIds]: { 
                 [key: TCard['id']]: number 
@@ -135,14 +96,51 @@
 
     // Remove URL parameters on mount
     onMount(() => {
-        const url = new URL(window.location.href);
+        // const url = new URL(window.location.href);
+        // 
+        // url.searchParams.forEach((value, key) => {
+        //     url.searchParams.delete(key);
+        // });
+        // 
+        // window.history.pushState({}, '', url);
+    });
 
-        url.searchParams.forEach((value, key) => {
-            url.searchParams.delete(key);
+    let fuse: Fuse<TCard>;
+
+    const select_identity = (selected_side: SidesIds) => {
+
+        filtered_cards = page.data.cards.filter((card: TCard) => card.attributes.card_type_id !== `${selected_side}_identity`)
+
+        filtered_types = selected_side === 'corp' ? 
+            page.data.card_types.filter((type: { id: CardTypeIds }) => 
+                type.id !== 'event' &&
+                type.id !== 'hardware' &&
+                type.id !== 'resource' &&
+                type.id !== 'program' &&
+                type.id !== 'corp_identity' &&
+                type.id !== 'runner_identity' 
+            ) : page.data.card_types.filter((type: { id: CardTypeIds }) => 
+                type.id !== 'agenda' &&
+                type.id !== 'asset' &&
+                type.id !== 'operation' &&
+                type.id !== 'upgrade' &&
+                type.id !== 'corp_identity' &&
+                type.id !== 'runner_identity'
+            )
+
+        fuse = new Fuse(filtered_cards, {
+            threshold: 0.3,
+            keys: [
+                { name: 'id', getFn: (_) => _.id }, // "id",
+                { name: 'card_type_id', getFn: (_) => _.attributes.card_type_id }, // "type",
+                { name: 'title', getFn: (_) => _.attributes.title }, // "title",
+                { name: 'faction_id', getFn: (_) => _.attributes.faction_id }, // "faction",
+            ]
         });
 
-        window.history.pushState({}, '', url);
-    })
+        // Filter cards to the user's selected identity's faction
+        search(identity?.attributes.faction_id ?? '');
+    }
 </script>
 
 {#if identity && side}
@@ -186,6 +184,10 @@
                                 <p>Filter by faction</p>
                                 <ToggleGroup.Root
                                     bind:value={filters.factions}
+                                    onValueChange={(value) => {
+                                        filters.factions = value;
+                                        search();
+                                    }}
                                     type="multiple"
                                     class="rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1 rounded-md"
                                 >
@@ -204,6 +206,11 @@
                                 <p>Filter by type</p>
                                 <ToggleGroup.Root
                                     bind:value={filters.types}
+                                    onValueChange={(value) => {
+                                        console.log('Selected types:', value);
+                                        filters.types = value;
+                                        search();
+                                    }}
                                     type="multiple"
                                     class="h-input rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1"
                                 >
@@ -230,15 +237,15 @@
                 
             </div>
             <div class="columns-group columns columns-2 gap-4">
-                {#each Object.entries(deck.cards) as [card_type, cards]}
+                {#each filtered_types as card_type}
                     <div class="grid gap-2" style="break-inside: avoid-column;">
                         <div class="flex flex-row items-center gap-2">
-                            <Icon name={card_type} size="sm" />
-                            <h2 class="text-lg">{locale(card_type)}</h2>
+                            <Icon name={card_type.id} size="sm" />
+                            <h2 class="text-lg">{locale(card_type.id)}</h2>
                         </div>
                         <div class="grid gap-2">
-                            {#if Object.keys(cards).length > 0}
-                                {#each Object.entries(cards) as [card_id, quantity]}
+                            {#if Object.keys(deck.cards[card_type] || {}).length > 0}
+                                {#each Object.entries(deck.cards[card_type] || {}) as [card_id, quantity]}
                                     <a href="/cards/{card_id}" class="flex flex-row items-center gap-2">
                                         {quantity}x {filtered_cards.find(card => card.id === card_id)?.attributes.title}
                                         <Influence
@@ -258,88 +265,88 @@
                 {/each}
             </div>
             <div>
-                {#if results.length > 0}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>{locale('qty')}</th>
-                                <th>{locale('title')}</th>
-                                <th>{locale('type')}</th>
-                                <th>{locale('influence')}</th>
-                                <th>{locale('faction')}</th>
-                                <th>{locale('trash')}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {#each results as result}
-                                <tr class="border-b border-b-border">
-                                    <td>
-                                        <input 
-                                            type="number" 
-                                            min="0" 
-                                            max="3" 
-                                            value="0" 
-                                            class="w-16" 
-                                            oninput={(e) => {
-                                                if (!e.target || !result.attributes.card_type_id) return;
+                <table>
+                    <thead>
+                        <tr>
+                            <th>{locale('qty')}</th>
+                            <th>{locale('title')}</th>
+                            <th>{locale('type')}</th>
+                            <th>{locale('influence')}</th>
+                            <th>{locale('faction')}</th>
+                            <th>{locale('trash')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {#each results as result}
+                            <tr class="border-b border-b-border">
+                                <td>
+                                    <input 
+                                        type="number" 
+                                        min="0" 
+                                        max="3" 
+                                        value="0" 
+                                        class="w-16" 
+                                        oninput={(e) => {
+                                            if (!e.target || !result.attributes.card_type_id) return;
 
-                                                if (!deck.cards[result.attributes.card_type_id]) {
-                                                    deck.cards[result.attributes.card_type_id] = {};
-                                                }
+                                            if (!deck.cards[result.attributes.card_type_id]) {
+                                                deck.cards[result.attributes.card_type_id] = {};
+                                            }
 
-                                                deck.cards[result.attributes.card_type_id][result.id] = parseInt((e.target as HTMLInputElement).value) || 0;
-                                            }}
-                                        />
-                                    </td>
-                                    <td>
-                                        <a href="/cards/{result.id}" target="_blank">{result.attributes.title} ({result.attributes.card_cycle_names[0]})</a>
-                                    </td>
-                                    <td>
-                                        <span class="icon-label">
-                                            <Icon name={result.attributes?.card_type_id} size="sm" />
-                                            {locale(result.attributes?.card_type_id)}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {#if result.attributes.influence_cost}
-                                            
-                                            <span class="icon-label">
-                                                <span data-faction-theme={result.attributes?.faction_id}>
-                                                    <Influence value={result.attributes?.influence_cost} />
-                                                </span>
-                                            </span>
-                                        {:else}
-                                            N/A
-                                        {/if}
-                                    </td>
-                                    <td>
+                                            deck.cards[result.attributes.card_type_id][result.id] = parseInt((e.target as HTMLInputElement).value) || 0;
+                                        }}
+                                    />
+                                </td>
+                                <td>
+                                    <a href="/cards/{result.id}" target="_blank" use:tooltip={result}>
+                                        {result.attributes.title} ({result.attributes.card_cycle_names[0]})
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="icon-label">
+                                        <Icon name={result.attributes?.card_type_id} size="sm" />
+                                        {locale(result.attributes?.card_type_id)}
+                                    </span>
+                                </td>
+                                <td>
+                                    {#if result.attributes.influence_cost}
+                                        
                                         <span class="icon-label">
                                             <span data-faction-theme={result.attributes?.faction_id}>
-                                                <Icon name={result.attributes?.faction_id} size="sm" />
+                                                <Influence value={result.attributes?.influence_cost} />
                                             </span>
-                                            {locale(result.attributes?.faction_id)}
                                         </span>
-                                    </td>
-                                    <td>
-                                        <span class="icon-label">
-                                            {#if result.attributes.cost}
-                                                <Icon name="credit" size="sm" />
-                                                {locale(result.attributes?.cost)}
-                                            {:else if result.attributes.memory_cost}
-                                                <Icon name="memory" size="sm" />
-                                                {locale(result.attributes?.memory_cost)}
-                                            {:else if result.attributes.trash_cost}
-                                                <Icon name="trash_cost" size="sm" />
-                                                {locale(result.attributes?.trash_cost)}
-                                            {/if}
+                                    {:else}
+                                        N/A
+                                    {/if}
+                                </td>
+                                <td>
+                                    <span class="icon-label">
+                                        <span data-faction-theme={result.attributes?.faction_id}>
+                                            <Icon name={result.attributes?.faction_id} size="sm" />
                                         </span>
-                                    </td>
-                                </tr>
-                                <!-- <Card data={result} quantity={0} influence={false} /> -->
-                            {/each}
-                        </tbody>
-                    </table>
-                {/if}
+                                        {locale(result.attributes?.faction_id)}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="icon-label">
+                                        {#if result.attributes.cost}
+                                            <Icon name="credit" size="sm" />
+                                            {locale(result.attributes?.cost)}
+                                        {:else if result.attributes.memory_cost}
+                                            <Icon name="memory" size="sm" />
+                                            {locale(result.attributes?.memory_cost)}
+                                        {:else if result.attributes.trash_cost}
+                                            <Icon name="trash_cost" size="sm" />
+                                            {locale(result.attributes?.trash_cost)}
+                                        {/if}
+                                    </span>
+                                </td>
+                            </tr>
+                            <!-- <Card data={result} quantity={0} influence={false} /> -->
+                        {/each}
+                    </tbody>
+                </table>
             </div>
         </div>
         <br/>
@@ -348,18 +355,25 @@
         <p>Want to choose another identity?</p>
         <button onclick={() => reset()}>Choose Another Identity</button>
     </Wrapper>
+    <Debug data={[
+        filtered_cards,
+        filtered_types
+    ]} />
+    <br/>
 {:else if side}
     <Header title="Choose decklist for {side}" inline={false} />
     <Wrapper class="grid gap-4">
         <Button onclick={() => reset()} variant="outline">Back</Button>
-        <ul class="flex flex-row flex-wrap gap-2">
+        <ul class="grid gap-2">
             {#each data.identities.filter((_identity: Card) => _identity.attributes.side_id === side) as _identity}
                 <Button 
                     class="flex flex-row gap-4 items-center" 
                     onclick={() => {
                         identity = _identity;
                         filters.factions = [_identity.attributes.faction_id];
+                        select_identity(_identity.attributes.side_id)
                     }}
+                    variant="outline"
                 >
                     <Icon name={_identity.attributes.faction_id} size="sm" />
                     <p>{_identity.attributes.title}</p>
@@ -385,3 +399,5 @@
         {/each}
     </Wrapper>
 {/if}
+
+<Debug data={data} />

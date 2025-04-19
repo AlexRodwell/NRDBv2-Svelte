@@ -1,16 +1,31 @@
-// import { error } from '@sveltejs/kit';
 import query from '$lib/api';
+import type { ApiResponse, Card } from '$lib/types';
 
-export async function load({ request }) {
+export async function load({ parent, request }) {
     const params = new URL(request.url).searchParams;
-    const identity = params.get('identity') ? await query(`cards/${params.get('identity')}`) : null;
-    const identities = await query(`cards?filter[card_type_id]=runner_identity,corp_identity&page[size]=999`);
-    const card_types = await query(`card_types`);
+    
+    const identity = params.get('identity') ?? null;
+    const side = params.get('side') ?? null;
+
+    if (identity) {
+        const identity: ApiResponse<Card[]> = await query(`cards/${params.get('identity')}`);
+
+        if (identity.data.length === 0) {
+            // throw error(404, 'Identity not found');
+            return {
+                identity: null,
+                side: side ?? null,
+            }
+        }
+
+        return {
+            identity: identity.data,
+            side: identity.data[0].attributes.side_id,
+        }
+    }
     
     return {
-        identity: identity ? identity.data : null,
-        side: params.get('side') ?? identity?.data?.[0]?.attributes?.side_id ?? null,
-        identities: identities.data,
-        card_types: card_types.data
+        identity: null,
+        side: side ?? null
     }
 }

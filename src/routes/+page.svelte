@@ -4,6 +4,7 @@
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import HeroDecklist from '$lib/components/decklist/Hero.svelte';
 	import DecklistRow from '$lib/components/decklist/Row.svelte';
+	import Debug from '$lib/components/Debug.svelte';
 	interface Props {
 		data: any;
 	}
@@ -50,9 +51,4 @@
 	</article>
 </Wrapper>
 
-{#each Object.entries(data) as [key, value]}
-	<details>
-		<summary>{key}</summary>
-		<pre>{JSON.stringify(value, null, 2)}</pre>
-	</details>
-{/each}
+<Debug data={data} />

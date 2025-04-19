@@ -14,7 +14,7 @@ export const load = async ({ data }) => {
         throw error(404, 'Cards not found');
     }
 
-    const cards_formatted = cards.data.map((card: any) => {
+    /* const cards_formatted = cards.data.map((card: any) => {
         return {
             id: card.id,
             // type: card.type,
@@ -30,11 +30,11 @@ export const load = async ({ data }) => {
                 side_id: card.attributes.side_id,
             }
         };
-    });
+    }); */
 
     return {
         ...data,
         factions: factions.data,
-        cards: cards_formatted
+        cards: cards.data /* cards_formatted */
     };
 }
