@@ -16,7 +16,7 @@ const query_builder = (parameters: object, prefix = ''): string => {
 }
 
 const query = async (endpoint: string, parameters: object = {}) => {
-    const response = await fetch(`${PUBLIC_API_URL}/${endpoint}`); // }${query_builder(parameters)}
+    const response = await fetch(`${PUBLIC_API_URL || 'https://api-preview.netrunnerdb.com/api/v3/public'}/${endpoint}`); // }${query_builder(parameters)}
 
     if (!response.ok) {
         throw new Error(`Error fetching ${endpoint}: ${response.statusText}`);

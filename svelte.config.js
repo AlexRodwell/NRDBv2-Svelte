@@ -6,7 +6,13 @@ import tailwindcss from "@tailwindcss/vite";
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			precompress: false,
+			env: {
+				host: '0.0.0.0',
+				port: '3434'
+			}
+		}),
 	}
 };
 
