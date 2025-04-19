@@ -1,14 +1,17 @@
-import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 import type { ApiResponse, Faction, Card } from '$lib/types';
 
-export const load = async () => {
+export const load = async ({ data }) => {
     const factions: ApiResponse<Faction[]> = await query(`factions`);
     const cards: ApiResponse<Card[]> = await query(`cards?page[size]=2500`);
 
     if (factions.data.length === 0) {
         throw error(404, 'Factions not found');
+    }
+
+    if (cards.data.length === 0) {
+        throw error(404, 'Cards not found');
     }
 
     const cards_formatted = cards.data.map((card: any) => {
@@ -30,6 +33,7 @@ export const load = async () => {
     });
 
     return {
+        ...data,
         factions: factions.data,
         cards: cards_formatted
     };

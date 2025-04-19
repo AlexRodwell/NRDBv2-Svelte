@@ -8,8 +8,6 @@ export async function load({ params, parent }) {
     const dotw_id: ApiResponse<Card> = await query(`cards/${decklists.data[0].attributes.identity_card_id}`);
     const dotw_cards: ApiResponse<Card> = await query(`cards?filter[decklist_id]=${decklists.data[0].id}`);
 
-    const latestDecklists: Decklist[] = decklists.data.slice(0, 10);
-
     return {
         decks: {
             weekly: {
@@ -17,7 +15,7 @@ export async function load({ params, parent }) {
                 decklist: decklists.data[0],
                 cards: dotw_cards.data
             },
-            latest: latestDecklists, // Latest Decklists
+            latest: decklists.data.slice(0, 10)
         },
         ...(new Date(set.data[0].attributes.date_release) > new Date() ?
             {

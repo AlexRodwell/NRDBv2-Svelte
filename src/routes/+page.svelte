@@ -38,15 +38,21 @@
 				</Box>
 			{/if}
 
-			<p>Latest decks</p>
-			<div class="@container/decklist grid gap-2">
-				{#each data.decks.latest as latest}
-					<DecklistRow data={latest} />
-					<!-- <div class="flex flex-row gap-2">
-						<a href={`/decklist/${latest.id}`}>{latest.attributes.name}</a>
-					</div> -->
-				{/each}
-			</div>
+			{#if data?.decks?.latest.length > 0}
+				<p>Latest decks</p>
+				<div class="@container/decklist grid gap-2">
+					{#each data.decks.latest as latest}
+						<DecklistRow data={latest} />
+					{/each}
+				</div>
+			{/if}
 		</aside>
 	</article>
 </Wrapper>
+
+{#each Object.entries(data) as [key, value]}
+	<details>
+		<summary>{key}</summary>
+		<pre>{JSON.stringify(value, null, 2)}</pre>
+	</details>
+{/each}
