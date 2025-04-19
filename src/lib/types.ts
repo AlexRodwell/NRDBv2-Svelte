@@ -283,3 +283,25 @@ export type Comment = {
     created_at: string;
     updated_at: string;
 }
+
+// TODO: Define the structure of a review
+export type Review = any;
+
+export type Rulings = {
+    id: string;
+    type: "rulings",
+    attributes: {
+        card_id: string;
+        nsg_rules_team_verified: boolean,
+        question: string;
+        answer: string;
+        text_ruling: string | null,
+        updated_at: string;
+    },
+    relationships: {
+        card: Relationship;
+    },
+    links: {
+        self: string;
+    };
+}

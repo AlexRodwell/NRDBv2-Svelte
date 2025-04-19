@@ -2,7 +2,7 @@
 	import { page } from '$app/state';
 	import Icon from '$lib/components/icons/Icon.svelte';
 	import Wrapper from '$lib/components/Wrapper.svelte';
-	import { locales } from '$lib/i18n';
+	import { locale } from '$lib/i18n';
 	import type { Faction } from '$lib/types';
 
 	let factions_formatted: { title: string; data: Faction[] }[] = [
@@ -24,7 +24,7 @@
 <Wrapper class="grid gap-16">
 	{#each factions_formatted as side}
 		<div class="grid gap-4">
-			<h2>{locales(side.title)}</h2>
+			<h2>{locale(side.title)}</h2>
 			<div class="grid grid-cols-4 gap-8">
 				{#each side.data as faction}
 					<a href="/faction/{faction.id}" class="grid gap-4">

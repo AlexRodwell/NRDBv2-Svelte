@@ -14,6 +14,6 @@
 
 <Wrapper class="grid grid-cols-6 gap-8">
 	{#each data.printings.data as printing}
-		<Card card={printing} quantity={0} />
+		<Card data={printing} quantity={0} />
 	{/each}
 </Wrapper>

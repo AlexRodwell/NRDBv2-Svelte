@@ -4,9 +4,10 @@
 	import Comment from "./Comment.svelte";
     import Icon from "$lib/components/icons/Icon.svelte";
     import SvelteMarkdown from 'svelte-markdown';
+    import type { Review } from "$lib/types";
 
     interface Props {
-        data: any;
+        data: Review;
     }
 
     let { data }: Props = $props();

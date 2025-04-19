@@ -3,9 +3,9 @@
         children: any;
     }
 
-    let { children }: Props = $props();
+    const { children }: Props = $props();
 </script>
 
-<svelte:head>
+<tr>
     {@render children()}
-</svelte:head>
+</tr>

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { image } from '$lib/api';
+	import type { Card } from '$lib/types';
 	import Influence from './Influence.svelte';
 
 	interface Props {
-		card: any;
+		data: Card;
 		quantity?: number;
 		details?: boolean;
 		stacked?: boolean;
@@ -11,30 +12,30 @@
 	}
 
 	let {
-		card,
-		quantity = card.attributes.deck_limit,
+		data,
+		quantity = data.attributes?.deck_limit || 0,
 		details = true,
 		stacked = false,
 		influence = true
 	}: Props = $props();
 
-	let id = $state<string>(card.id);
+	let id = $state<string>(data.id);
 
-	switch (card.type) {
+	switch (data.type) {
 		case 'printings':
-			id = card.attributes.card_id;
+			id = data.attributes.card_id;
 			break;
 		case 'factions':
-			id = card.attributes.faction_id;
+			id = data.attributes.faction_id;
 			break;
 		case 'sets':
-			id = card.attributes.set_id;
+			id = data.attributes.set_id;
 			break;
 		case 'formats':
-			id = card.attributes.format_id;
+			id = data.attributes.format_id;
 			break;
 		default:
-			id = card.id;
+			id = data.id;
 	}
 </script>
 
@@ -42,26 +43,26 @@
 
 <!-- {#snippet image()}
 	<img
-		src={image(card.attributes.printing_ids[0])}
-		alt={card.attributes.title}
+		src={image(data.attributes.printing_ids[0])}
+		alt={data.attributes.title}
 		class="absolute inset-0 h-full w-full object-cover"
 	/>
 {/snippet} -->
 
 <a class="card" href={`/cards/${id}`}>
 	<div class="relative aspect-[6.3/8.8]">
-		{#if card.attributes?.printing_ids?.[0]}
+		{#if data.attributes?.printing_ids?.[0]}
 			<!-- {@render image()} -->
 			<img
-				src={image(card.attributes.printing_ids[0])}
-				alt={card.attributes.title}
+				src={image(data.attributes.printing_ids[0])}
+				alt={data.attributes.title}
 				class="absolute inset-0 h-full w-full object-cover rounded-lg"
 			/>
 			{#if stacked && quantity - 1 > 0}
 				{#each Array(quantity - 1) as _, i}
 					<img
-						src={image(card.attributes.printing_ids[0])}
-						alt={card.attributes.title}
+						src={image(data.attributes.printing_ids[0])}
+						alt={data.attributes.title}
 						class="absolute inset-0 h-full w-full object-cover rounded-md"
 						aria-hidden="true"
 					/>
@@ -75,11 +76,11 @@
 				{#if quantity >= 1}
 					{quantity}x
 				{/if}
-				{card.attributes.title}
+				{data.attributes.title}
 				{#if influence}
 					<Influence
-						value={card.attributes.influence_cost}
-						faction={card.attributes.faction_id}
+						value={data.attributes.influence_cost}
+						faction={data.attributes.faction_id}
 						text={false}
 					/>
 				{/if}

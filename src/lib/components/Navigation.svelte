@@ -8,7 +8,7 @@
 	import { page } from '$app/state';
 	import type { Card as TCard } from "$lib/types";
 	import { onMount } from "svelte";
-	import { locales } from "$lib/i18n";
+	import { locale } from "$lib/i18n";
 
 	const navigation = [
 		{
@@ -92,11 +92,13 @@
 
 <nav id="navigation" class="bg-foreground border-b border-b-border z-50">
 	<div class="container grid grid-cols-[1fr_3fr_1fr] gap-8 py-6">
-		<div>
-			<a href="/">
-				NetrunnerDB
-			</a>
-		</div>
+		<a class="flex flex-row gap-1 items-center" href="/">
+			<svg class="max-w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 148.2 143.72">
+				<polygon fill="#ff0000" points="99.28 99.28 68.46 99.28 68.46 88.71 88.71 88.71 88.71 10.57 10.57 10.57 10.57 88.71 38.71 88.71 38.71 99.28 0 99.28 0 0 99.28 0 99.28 99.28"/>
+				<polygon fill="#0000ff" points="148.2 143.72 48.92 143.72 48.92 44.44 79.39 44.44 79.39 54.48 59.5 54.48 59.5 133.15 137.63 133.15 137.63 54.48 109.5 54.48 109.5 44.44 148.2 44.44 148.2 143.72"/>
+			</svg>
+			NetrunnerDB
+		</a>
 		<div class={["relative grid grid-cols-[1fr_auto] items-center p-1 border border-border", results_display ? 'rounded-t-xl' : 'rounded-xl']}>
 			<Icon name="subroutine" size="sm" class="!absolute left-4 top-1/2 -translate-y-1/2" />
 			<input 
@@ -130,16 +132,16 @@
 								<p>{result.attributes.title} ({result.attributes.card_cycle_names[0]})</p>
 								<p class="icon-label">
 									<Icon name={result.attributes?.card_type_id} size="sm" />
-									{locales(result.attributes?.card_type_id)}
+									{locale(result.attributes?.card_type_id)}
 								</p>
 								<p class="icon-label">
 									<span data-faction-theme={result.attributes?.faction_id}>
 										<Icon name={result.attributes?.faction_id} size="sm" />
 									</span>
-									{locales(result.attributes?.faction_id)}
+									{locale(result.attributes?.faction_id)}
 								</p>
 							</a>
-							<!-- <Card card={result} quantity={0} influence={false} /> -->
+							<!-- <Card data={result} quantity={0} influence={false} /> -->
 						{/each}
 					{/if}
 				</div>

@@ -58,7 +58,7 @@ export const i18n = createI18n(runtime, {
     }
 })
 
-export const locales = (value: string, parameter?: string) => {
+export const locale = (value: string, parameter?: string) => {
     const locales: Record<string, string> = {
         // Sides
         runner: m.runner(),
@@ -111,6 +111,9 @@ export const locales = (value: string, parameter?: string) => {
         legality: m.legality(),
         cards: m.cards(),
         release_date: m.release_date(),
+        cycle: m.cycle(),
+        set: m.set(),
+        trash: m.trash(),
 
         // Example
         // example: m.example(parameter),

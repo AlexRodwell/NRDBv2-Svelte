@@ -13,7 +13,6 @@ export async function load({ params }) {
 
     // Check if the id is a number, if so, we need to get the card id from the printings endpoint
     if (!isNaN(Number(params.id))) {
-        console.log('ID', params.id);
         const print_id: ApiResponse<Card> = await query(`printings/${params.id}`);
         id = print_id.data.attributes.card_id;
 

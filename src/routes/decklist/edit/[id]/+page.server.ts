@@ -15,20 +15,8 @@ export async function load({ params, parent }) {
         throw error(404, 'Cards not found');
     }
 
-    const sortedCards = cards.data.reduce((acc, card) => {
-        const typeId = card.attributes.card_type_id;
-
-        if (!acc.find(item => item.type === typeId)) {
-            acc.push({ type: typeId, data: [card] });
-        } else {
-            acc.find(item => item.type === typeId).data.push(card);
-        }
-
-        return acc;
-    }, []);
-
     return {
         meta: deck.data[0],
-        cards: sortedCards
+        cards: cards.data
     };
 }

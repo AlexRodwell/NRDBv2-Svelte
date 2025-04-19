@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import query from '$lib/api';
-import type { SidesIds, FactionIds, CardTypeIds, ApiResponse, Decklist } from '$lib/types'
+import type { SidesIds, FactionIds, Card, CardTypeIds, ApiResponse, Decklist } from '$lib/types'
 
 export async function load({ params, parent }) {
 
@@ -19,8 +19,7 @@ export async function load({ params, parent }) {
     }
 
     const identities = await query(`cards?filter[faction_id]=${params.name}&filter[card_type_id]=${card_type_id}`);
-    const identity_ids = identities.data.map((identity) => identity.id);
-    console.log('identity_ids', identity_ids);
+    const identity_ids = identities.data.map((identity: Card) => identity.id);
 
     // Fetch the decklists for each identity in parallel
     // Use Promise.all to wait for all the requests to complete
@@ -45,8 +44,8 @@ export async function load({ params, parent }) {
     }
 
     return {
-        faction,
-        identities,
+        faction: faction.data,
+        identities: identities.data,
         decks: decks,
     };
 }

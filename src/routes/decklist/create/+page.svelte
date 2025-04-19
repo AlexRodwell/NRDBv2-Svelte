@@ -6,7 +6,7 @@
     import type { Card as TCard, CardTypeIds} from '$lib/types';
     import { page } from '$app/state';
     import Fuse from 'fuse.js'
-    import { locales } from "$lib/i18n";
+    import { locale } from "$lib/i18n";
 	import Header from "$lib/components/Header.svelte";
 	import Influence from "$lib/components/Influence.svelte";
     import { DatePicker, ToggleGroup, Tabs, DropdownMenu } from "bits-ui";
@@ -69,8 +69,6 @@
         }
     })
 
-    console.log(filtered_cards);
-
     const reset = () => {
         identity = null;
         side = null;
@@ -108,8 +106,8 @@
         factions: string[];
         types: string[];
     }>({
-        factions: [],
-        types: []
+        factions: [identity?.attributes.faction_id],
+        types: ['agenda']
     });
 
     let deck = $state<{
@@ -157,7 +155,7 @@
         <div class="grid gap-8 grid-cols-[3fr_4fr]">
             <div class="flex flex-row gap-8 items-center">
                 <div class="w-full max-w-32">
-                    <Card card={identity} details={false} />
+                    <Card data={identity} details={false} />
                 </div>
             </div>
             <div class="grid gap-4">
@@ -175,27 +173,27 @@
                     </Tabs.List>
                     
                     <Tabs.Content value="Build">
-                                <input 
-                                    class="w-full"
-                                    type="search" 
-                                    placeholder="Find a card or filter the list" 
-                                    oninput={(e) => {
-                                        search(e.target.value)
-                                    }}
-                                />
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div class="grid gap-2 p-2 border border-border">
-                                        <p>Filter by faction</p>
-                                        <ToggleGroup.Root
-                                            bind:value={filters.factions}
+                        <input 
+                            class="w-full"
+                            type="search" 
+                            placeholder="Find a card or filter the list" 
+                            oninput={(e) => {
+                                search(e.target.value)
+                            }}
+                        />
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="grid gap-2 p-2 border border-border">
+                                <p>Filter by faction</p>
+                                <ToggleGroup.Root
+                                    bind:value={filters.factions}
                                     type="multiple"
-                                    class="h-input rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1"
+                                    class="rounded-card-sm border-border bg-background-alt shadow-mini flex items-center gap-x-0.5 border px-[4px] py-1 rounded-md"
                                 >
                                     {#each page.data.factions.filter((faction: Faction) => faction.attributes.side_id === identity.attributes.side_id) as faction}
                                         <ToggleGroup.Item
                                             aria-label={faction.id}
                                             value={faction.id}
-                                            class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-white data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex size-10 items-center justify-center transition-all active:scale-[0.98]"
+                                            class="rounded-9px bg-background-alt hover:bg-muted active:bg-dark-10 data-[state=on]:bg-white data-[state=off]:text-foreground-alt data-[state=on]:text-foreground active:data-[state=on]:bg-dark-10 inline-flex size-10 items-center justify-center transition-all active:scale-[0.98] rounded-sm"
                                         >
                                             <Icon name={faction.id} />
                                         </ToggleGroup.Item>
@@ -231,12 +229,12 @@
                 </Tabs.Root>
                 
             </div>
-            <div class="columns columns-2 gap-4">
+            <div class="columns-group columns columns-2 gap-4">
                 {#each Object.entries(deck.cards) as [card_type, cards]}
                     <div class="grid gap-2" style="break-inside: avoid-column;">
                         <div class="flex flex-row items-center gap-2">
                             <Icon name={card_type} size="sm" />
-                            <h2 class="text-lg">{locales(card_type)}</h2>
+                            <h2 class="text-lg">{locale(card_type)}</h2>
                         </div>
                         <div class="grid gap-2">
                             {#if Object.keys(cards).length > 0}
@@ -264,12 +262,12 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>{locales('qty')}</th>
-                                <th>{locales('title')}</th>
-                                <th>{locales('type')}</th>
-                                <th>{locales('influence')}</th>
-                                <th>{locales('faction')}</th>
-                                <th>...</th>
+                                <th>{locale('qty')}</th>
+                                <th>{locale('title')}</th>
+                                <th>{locale('type')}</th>
+                                <th>{locale('influence')}</th>
+                                <th>{locale('faction')}</th>
+                                <th>{locale('trash')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -299,7 +297,7 @@
                                     <td>
                                         <span class="icon-label">
                                             <Icon name={result.attributes?.card_type_id} size="sm" />
-                                            {locales(result.attributes?.card_type_id)}
+                                            {locale(result.attributes?.card_type_id)}
                                         </span>
                                     </td>
                                     <td>
@@ -319,25 +317,25 @@
                                             <span data-faction-theme={result.attributes?.faction_id}>
                                                 <Icon name={result.attributes?.faction_id} size="sm" />
                                             </span>
-                                            {locales(result.attributes?.faction_id)}
+                                            {locale(result.attributes?.faction_id)}
                                         </span>
                                     </td>
                                     <td>
                                         <span class="icon-label">
                                             {#if result.attributes.cost}
                                                 <Icon name="credit" size="sm" />
-                                                {locales(result.attributes?.cost)}
+                                                {locale(result.attributes?.cost)}
                                             {:else if result.attributes.memory_cost}
                                                 <Icon name="memory" size="sm" />
-                                                {locales(result.attributes?.memory_cost)}
+                                                {locale(result.attributes?.memory_cost)}
                                             {:else if result.attributes.trash_cost}
                                                 <Icon name="trash_cost" size="sm" />
-                                                {locales(result.attributes?.trash_cost)}
+                                                {locale(result.attributes?.trash_cost)}
                                             {/if}
                                         </span>
                                     </td>
                                 </tr>
-                                <!-- <Card card={result} quantity={0} influence={false} /> -->
+                                <!-- <Card data={result} quantity={0} influence={false} /> -->
                             {/each}
                         </tbody>
                     </table>
@@ -361,7 +359,6 @@
                     onclick={() => {
                         identity = _identity;
                         filters.factions = [_identity.attributes.faction_id];
-                        console.log('Selected side', identity?.attributes.side_id);
                     }}
                 >
                     <Icon name={_identity.attributes.faction_id} size="sm" />
@@ -375,14 +372,14 @@
     <Wrapper class="grid grid-cols-2 gap-4">
         {#each ["corp", "runner"] as _side}
             <div class="grid content-center items-center border border-border rounded-xl p-8 aspect-video text-center gap-4">
-                <h2>Create a {locales(_side)} deck</h2>
+                <h2>Create a {locale(_side)} deck</h2>
                 <Button 
                     onclick={() => {
                         side = _side;
                     }}
                 >
                     <Icon name={_side} size="lg" /> 
-                    <span>{locales(_side)}</span>
+                    <span>{locale(_side)}</span>
                 </Button>
             </div>
         {/each}

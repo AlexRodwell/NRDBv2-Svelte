@@ -1,15 +1,22 @@
 import query from '$lib/api';
+import type { ApiResponse, Card, Decklist } from '$lib/types';
 
 export async function load({ params, parent }) {
-    const decklists = await query('decklists?page[limit]=10'); // 'decklists?filter[sort]=-created_at&page[limit]=10' // Updated
-    const set = await query('card_sets?sort=-date_release&page[size]=1');
+    const decklists: ApiResponse<Decklist[]> = await query('decklists?page[limit]=10'); // 'decklists?filter[sort]=-created_at&page[limit]=10' // Updated
+    const set: ApiResponse<any[]> = await query('card_sets?sort=-date_release&page[size]=1');
 
-    const dotw = decklists.data[0];
-    const latestDecklists = decklists.data.slice(0, 10);
+    const dotw_id: ApiResponse<Card> = await query(`cards/${decklists.data[0].attributes.identity_card_id}`);
+    const dotw_cards: ApiResponse<Card> = await query(`cards?filter[decklist_id]=${decklists.data[0].id}`);
+
+    const latestDecklists: Decklist[] = decklists.data.slice(0, 10);
 
     return {
         decks: {
-            weekly: dotw, // Deck of the Week
+            weekly: {
+                identity: dotw_id.data,
+                decklist: decklists.data[0],
+                cards: dotw_cards.data
+            },
             latest: latestDecklists, // Latest Decklists
         },
         ...(new Date(set.data[0].attributes.date_release) > new Date() ?

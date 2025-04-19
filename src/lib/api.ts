@@ -25,8 +25,8 @@ const query = async (endpoint: string, parameters: object = {}) => {
     return response.json();
 }
 
-export const image = (id: string) => {
-    return `https://card-images.netrunnerdb.com/v2/large/${id}.jpg`;
+export const image = (id: string | string[]) => {
+    return `https://card-images.netrunnerdb.com/v2/large/${Array.isArray(id) ? id[0] : id}.jpg`;
 }
 
 export default query;

@@ -3,7 +3,7 @@
 	import Factions from '$lib/components/Factions.svelte';
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import HeroDecklist from '$lib/components/decklist/Hero.svelte';
-
+	import DecklistRow from '$lib/components/decklist/Row.svelte';
 	interface Props {
 		data: any;
 	}
@@ -11,17 +11,11 @@
 	let { data }: Props = $props();
 </script>
 
-<Wrapper>
+<Wrapper class="grid gap-12">
 	<Factions />
-	<article class="grid grid-cols-[3fr_1fr] gap-8">
+	<article class="grid grid-cols-[3fr_1fr] gap-8 items-start">
 		<main class="">
-			<HeroDecklist decklist={data.decks.weekly} />
-			<p>Deck of the week</p>
-			<div class="flex flex-row gap-2">
-				<!-- <img src={data.decks.weekly.faction} alt={data.decks.weekly.faction} /> -->
-				<p>{data.decks.weekly.attributes.name}</p>
-				<a href={`/decklist/${data.decks.weekly.id}`}>View decklist</a>
-			</div>
+			<HeroDecklist identity={data.decks.weekly.identity} decklist={data.decks.weekly.decklist} cards={data.decks.weekly.cards} />
 		</main>
 		<aside class="">
 			{#if data.upcoming_set}
@@ -45,11 +39,12 @@
 			{/if}
 
 			<p>Latest decks</p>
-			<div class="grid gap-2">
+			<div class="@container/decklist grid gap-2">
 				{#each data.decks.latest as latest}
-					<div class="flex flex-row gap-2">
+					<DecklistRow data={latest} />
+					<!-- <div class="flex flex-row gap-2">
 						<a href={`/decklist/${latest.id}`}>{latest.attributes.name}</a>
-					</div>
+					</div> -->
 				{/each}
 			</div>
 		</aside>

@@ -6,7 +6,7 @@
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import Icon from '$lib/components/icons/Icon.svelte';
 	import type { Card as TCard, Printing } from '$lib/types';
-	import { locales } from '$lib/i18n';
+	import { locale } from '$lib/i18n';
 	import { format_date } from '$lib/utils';
 	import Box from '$lib/components/Box.svelte';
 	import { image } from '$lib/api';
@@ -54,7 +54,7 @@
 <Wrapper class="grid gap-12">
 	<section class="grid grid-cols-[1fr_1.5fr_1.5fr] gap-12">
 		<div>
-			<Card {card} details={false} />
+			<Card data={card} details={false} />
 
 			{#if printings.length > 1}
 				<h2>Faces ({printings[0].attributes.num_extra_faces})</h2>
@@ -74,8 +74,8 @@
 						<td>Type</td>
 						<td>
 							<span class="icon-label">
-								<Icon name={card.attributes.card_type_id} />
-								{locales(card.attributes.card_type_id)}
+								<Icon name={card.attributes.card_type_id} size="sm" />
+								{locale(card.attributes.card_type_id)}
 							</span>
 						</td>
 					</tr>
@@ -86,11 +86,11 @@
 					<tr>
 						<td>Faction</td>
 						<td>
-							<a href="/factions/{card.attributes.faction_id}" class="icon-label">
+							<a href="/faction/{card.attributes.faction_id}" title={locale(card.attributes.faction_id)} class="icon-label">
 								<span data-faction-theme={card.attributes.faction_id}>
 									<Icon name={card.attributes.faction_id} />
 								</span>
-								{locales(card.attributes.faction_id)}
+								{locale(card.attributes.faction_id)}
 							</a>
 						</td>
 					</tr>
@@ -107,16 +107,28 @@
 						<td>Cost</td>
 						<td>
 							<span class="icon-label">
-								<Icon name="credit" />
+								<Icon name="credit" size="sm" />
 								{card.attributes.cost}
 							</span>
 						</td>
 					</tr>
-					<!----><!----><!---->
+					{#if card.attributes.trash_cost}
+						<tr>
+							<td>Trash</td>
+							<td>
+								<span class="icon-label">
+									<Icon name="trash" size="sm" />
+									{card.attributes.trash_cost}
+								</span>
+							</td>
+						</tr>
+					{/if}
 				</tbody>
 			</table>
 
-			<FormatText text={card.attributes.text} />
+			<div data-faction-theme={card.attributes.faction_id} class="pl-4 border-l border-l-(--theme)">
+				<FormatText text={card.attributes.text} />
+			</div>
 
 			{#if printings[0].attributes.flavor}
 				<p>Flavor: {printings[0].attributes.flavor}</p>
@@ -126,7 +138,7 @@
 				<h2>Printings</h2>
 				{#each printings as printing}
 					<div class="max-w-32">
-						<Card card={printing} />
+						<Card data={printing} />
 					</div>
 				{/each}
 			{/if} -->
@@ -153,7 +165,7 @@
 
 	<section class="grid gap-4">
 		{#if rulings.length > 0}
-			<h2 class="text-2xl">{locales('rulings')}</h2>
+			<h2 class="text-2xl">{locale('rulings')}</h2>
 			<div class="grid gap-4">
 				{#each rulings as ruling}
 					<Ruling data={ruling} />
@@ -165,7 +177,7 @@
 	</section>
 
 	<section class="grid gap-4">
-		<h2 class="text-2xl">{locales('reviews')}</h2>
+		<h2 class="text-2xl">{locale('reviews')}</h2>
 		<div class="grid gap-4">
 			{#each reviews as review}
 				<Review data={review} />
@@ -173,5 +185,3 @@
 		</div>
 	</section>
 </Wrapper>
-
-<pre>{JSON.stringify(reviews, null, 2)}</pre>

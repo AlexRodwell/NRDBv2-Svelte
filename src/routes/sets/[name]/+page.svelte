@@ -5,14 +5,16 @@
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import Influence from '$lib/components/Influence.svelte';
-	import { locales } from '$lib/i18n';
+	import { locale } from '$lib/i18n';
+	import { tooltip } from '$lib/actions';
+	import * as Table from '$lib/components/table';
 
 	let { data } = $props();
 </script>
 
 <Header
 	icon={data.set.id}
-	category={locales('set')}
+	category={locale('set')}
 	title={data.set.attributes.name}
 	inline={false}
 >
@@ -22,13 +24,17 @@
 				>{format_date(data.set.attributes.date_release)}</time
 			>, by <Icon class="inline" name={data.set.attributes.released_by} size="sm" />
 			<a href="/publishers/{data.set.attributes.released_by}"
-				>{locales(data.set.attributes.released_by)}</a
+				>{locale(data.set.attributes.released_by)}</a
 			>
 		</p>
 	{/snippet}
 	{#snippet actions()}
-		<Button href="/sets/prev" label="prev set" variant="pill" />
-		<Button href="/sets/next" label="next set" variant="pill" />
+		<Button href="/sets/prev" variant="pill">
+			{locale('previous')}
+		</Button>
+		<Button href="/sets/next" variant="pill">
+			{locale('next')}
+		</Button>
 	{/snippet}
 </Header>
 
@@ -37,72 +43,67 @@
 		<table class="results mt-5">
 			<thead>
 				<tr>
-					<th>{locales('name')}</th>
-					<th>{locales('influence')}</th>
-					<th>{locales('faction')}</th>
-					<th>{locales('type')}</th>
-					<th>{locales('subtype')}</th>
-					<th>{locales('cost')}</th>
-					<th>...</th>
-					<th>{locales('strength')}</th>
+					<th>{locale('name')}</th>
+					<th>{locale('influence')}</th>
+					<th>{locale('faction')}</th>
+					<th>{locale('type')}</th>
+					<th>{locale('subtype')}</th>
+					<th>{locale('cost')}</th>
+					<th>{locale('trash')}</th>
+					<th>{locale('strength')}</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each data.cards as card}
 					<tr>
-						<td>
-							<a href="/cards/{card.id}">
+						<Table.Cell>
+							<a href="/cards/{card.id}" use:tooltip={card}>
 								{card.attributes.title}
 							</a>
-						</td>
-						<td>
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.influence_cost}
 								<Influence
 									value={card.attributes.influence_cost}
 									faction={card.attributes.faction_id}
 								/>
-							{:else}
-								<span class="not-applicable">-</span>
 							{/if}
-						</td>
-						<td data-faction-theme={card.attributes.faction_id}>
-							<Icon name={card.attributes.faction_id} />
-						</td>
-						<td>
-							<span class="icon-label">
-								<Icon name={card.attributes.card_type_id} size="sm" />
-								{card.attributes.card_type_id}
+						</Table.Cell>
+						<Table.Cell>
+							<span data-faction-theme={card.attributes.faction_id}>
+								<Icon name={card.attributes.faction_id} />
 							</span>
-						</td>
-						<td>
-							<span class="icon-label">
-								{card.attributes.display_subtypes}
-							</span>
-						</td>
-						<td>
+							{locale(card.attributes.faction_id)}
+						</Table.Cell>
+						<Table.Cell>
+							<Icon name={card.attributes.card_type_id} size="sm" />
+							{locale(card.attributes.card_type_id)}
+						</Table.Cell>
+						<Table.Cell>
+							{card.attributes.display_subtypes}
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.cost}
-								<span class="icon-label">
-									{card.attributes.cost}
-									<Icon name="credit" size="sm" />
-								</span>
+								{card.attributes.cost}
+								<Icon name="credit" size="sm" />
 							{/if}
-						</td>
-						<td>
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.trash_cost}
 								<span class="icon-label">
 									{card.attributes.trash_cost}
 									<Icon name="trash-cost" size="sm" />
 								</span>
 							{/if}
-						</td>
-						<td>
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.strength}
 								<span class="icon-label">
 									{card.attributes.strength}
 									<Icon name="strength" size="sm" />
 								</span>
 							{/if}
-						</td>
+						</Table.Cell>
 					</tr>
 				{/each}
 			</tbody>

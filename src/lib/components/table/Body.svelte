@@ -1,15 +1,20 @@
+<script lang="ts">
+	import Icon from '$lib/components/icons/Icon.svelte';
+	import { locale } from '$lib/i18n';
+</script>
+
 <table class="results mt-4">
 	<thead>
 		<tr>
-			<th>Qty.</th>
-			<th>Name</th>
-			<th>Influence</th>
-			<th>Faction</th>
-			<th>Type</th>
-			<th>Subtype</th>
-			<th>Cost</th>
-			<th>...</th>
-			<th>Strength</th>
+			<th>{locale('qty')}</th>
+			<th>{locale('name')}</th>
+			<th>{locale('influence')}</th>
+			<th>{locale('faction')}</th>
+			<th>{locale('type')}</th>
+			<th>{locale('subtype')}</th>
+			<th>{locale('cost')}</th>
+			<th>{locale('trash')}</th>
+			<th>{locale('strength')}</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -149,31 +154,7 @@
 			</td>
 			<td>
 				2
-
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					viewBox="0 0 4500 4500"
-					clip-rule="evenodd"
-					fill-rule="evenodd"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-miterlimit="10"
-					height="1em"
-					style="max-width: 100%; transform: translateY(-2px)"
-					><path
-						style="line-height:normal;font-variant-ligatures:normal;font-variant-position:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-alternates:normal;font-variant-east-asian:normal;font-feature-settings:normal;font-variation-settings:normal;text-indent:0;text-align:start;text-decoration-line:none;text-decoration-style:solid;text-decoration-color:#000;text-transform:none;text-orientation:mixed;white-space:normal;shape-padding:0;shape-margin:0;inline-size:0;isolation:auto;mix-blend-mode:normal;solid-color:#000;solid-opacity:1"
-						d="M1637.04 255.931c-102.752 0-209.943 52.81-268.652 144.693l-.502.794-82.396 130.765h-192.675c-53.011 0-126.144 13.593-175.806 71.85-49.662 58.258-49.44 116.945-49.44 153.396v291.624c.001 1.88.037 3.76.108 5.637 1.399 36.822-1.406 94.489 56.062 153.543a207.3 207.3 0 0012.735 12.032v246.119c.528 7.703.757 15.606 1.708 22.344l12.7 83.332H252.777v164.926h723.24l59.642 391.371H45.577v164.928h1015.216l22.44 147.254H689.287v164.926h419.078l233.208 1530.319c11.062 72.544 73.442 126.138 146.825 126.144h1917.712c73.595-.01 136.09-53.904 146.908-126.7l391.233-2634.136a148.528 148.528 0 001.611-21.82v-283.657c39.08-42.918 57.519-101.6 57.519-152.998V762.124c0-41.582-3.111-103.413-53.358-160.629-50.247-57.216-123.772-72.153-179.424-72.153h-184.53l-93.557-137.886-.322-.473c-26.243-38.362-64.47-80.469-115.86-105.105-51.392-24.637-99.692-28.375-144.974-29.866-1.63-.054-3.26-.08-4.89-.08zm-5.245 297.02c1.479.006 3.208.02 5.245.02h1585.862c10.333.386 16.804 1.017 21.328 1.585 1.016 1.443.54.85 2.48 3.674l.312.46.01.01 137.43 202.552a148.535 148.535 0 00122.9 65.13h198.982v143.055H1164.613V829.223h202.843c51.014-.002 98.458-26.184 125.656-69.343l125.587-199.32c4.037-6.317 3.173-7.429 9.36-7.589 1.03-.026 2.257-.027 3.735-.02zm-398.281 713.548l2415.31.361v201.443L3278.02 3964.888H1616l-382.487-2509.88z"
-						fill="#999"
-						font-weight="400"
-						font-family="sans-serif"
-						clip-rule="nonzero"
-						overflow="visible"
-						fill-rule="nonzero"
-						stroke-width="1.061"
-						stroke-linecap="butt"
-						stroke-linejoin="miter"
-					></path></svg
-				>
+				<Icon name="trash" size="sm" />
 			</td>
 			<td>
 				<!---->

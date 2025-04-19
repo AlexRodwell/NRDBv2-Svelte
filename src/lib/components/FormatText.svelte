@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Icon from '$lib/components/icons/Icon.svelte';
-	import { locales } from '$lib/i18n';
+	import { locale } from '$lib/i18n';
 
 	interface Props {
 		text: string;
@@ -13,7 +13,18 @@
 	let current_paragraph = 0;
 
 	text_array.forEach((segment) => {
-		if (['\n', '[subroutine]'].includes(segment)) {
+		// Skip empty strings
+		if (segment.trim() === '') {
+			return;
+		}
+
+		if (segment === '\n') {
+			// Skip adding a new paragraph if the segment is just a line break
+			if (paragraph_array[current_paragraph]?.length > 0) {
+				paragraph_array.push([]);
+				current_paragraph++;
+			}
+		} else if (segment === '[subroutine]') {
 			paragraph_array.push([segment]);
 			current_paragraph++;
 		} else {
@@ -36,9 +47,9 @@
 			{#each paragraph as segment}
 				{#if segment.startsWith('[')}
 					{@const value = segment.slice(1, -1)}
-					<abbr class="icon-a11y" title={locales(value)}>
-						<Icon name={value} size="sm" inline={true} />
-						<span class="visually-hidden">{locales(segment)}</span>
+					<abbr class="icon-a11y" title={locale(value)}>
+						<Icon name={value} size="sm" inline={true} fill="current" />
+						<span class="visually-hidden">{locale(segment)}</span>
 					</abbr>
 				{:else}
 					<span>{@html segment}</span>

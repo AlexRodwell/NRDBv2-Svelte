@@ -19,7 +19,7 @@
 			{#if icon}
 				<div
 					data-faction-theme={icon}
-					class="flex aspect-square h-full items-center justify-center rounded-md bg-white/10 p-4"
+					class="flex aspect-square h-full items-center justify-center rounded-md bg-border p-4"
 				>
 					<Icon name={icon} size="xl" fallback={true} />
 				</div>

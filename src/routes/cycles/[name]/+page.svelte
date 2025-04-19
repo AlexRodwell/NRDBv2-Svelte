@@ -4,15 +4,17 @@
 	import { format_date } from '$lib/utils';
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import { locales } from '$lib/i18n';
+	import { locale } from '$lib/i18n';
 	import Influence from '$lib/components/Influence.svelte';
+	import { tooltip } from '$lib/actions';
+	import * as Table from '$lib/components/table';
 
 	let { data } = $props();
 
 	const released = new Date(data.cycle.attributes.date_release) < new Date() ? true : false;
 </script>
 
-<Header icon={data.cycle.id} category={locales('set')} title={data.cycle.attributes.name} inline={false}>
+<Header icon={data.cycle.id} category={locale('cycle')} title={data.cycle.attributes.name} inline={false}>
 	{#snippet subtitle()}
 		<p>
 			{released ? 'Released' : 'To be released'} on
@@ -20,16 +22,16 @@
 				>{format_date(data.cycle.attributes.date_release)}</time
 			>, by <Icon class="inline" name={data.cycle.attributes.released_by} size="sm" />
 			<a href="/publishers/{data.cycle.attributes.released_by}"
-				>{locales(data.cycle.attributes.released_by)}</a
+				>{locale(data.cycle.attributes.released_by)}</a
 			>
 		</p>
 	{/snippet}
 	{#snippet actions()}
 		<Button href="/sets/prev" variant="pill">
-			{locales('previous')}
+			{locale('previous')}
 		</Button>
 		<Button href="/sets/next" variant="pill">
-			{locales('next')}
+			{locale('next')}
 		</Button>
 	{/snippet}
 </Header>
@@ -39,73 +41,64 @@
 		<table class="results mt-5">
 			<thead>
 				<tr>
-					<th>{locales('name')}</th>
-					<th>{locales('influence')}</th>
-					<th>{locales('faction')}</th>
-					<th>{locales('type')}</th>
-					<th>{locales('subtype')}</th>
-					<th>{locales('cost')}</th>
-					<th>...</th>
-					<th>{locales('strength')}</th>
+					<th>{locale('name')}</th>
+					<th>{locale('influence')}</th>
+					<th>{locale('faction')}</th>
+					<th>{locale('type')}</th>
+					<th>{locale('subtype')}</th>
+					<th>{locale('cost')}</th>
+					<th>{locale('trash')}</th>
+					<th>{locale('strength')}</th>
 				</tr>
 			</thead>
 			<tbody>
 				{#each data.cards as card}
-					<tr>
-						<td>
-							<a href="/cards/{card.id}">
+					<Table.Row>
+						<Table.Cell>
+							<a href="/cards/{card.id}" use:tooltip={card}>
 								{card.attributes.title}
 							</a>
-						</td>
-						<td>
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.influence_cost}
 								<Influence
 									value={card.attributes.influence_cost}
 									faction={card.attributes.faction_id}
 								/>
-							{:else}
-								<span class="not-applicable">-</span>
 							{/if}
-						</td>
-						<td data-faction-theme={card.attributes.faction_id}>
-							<Icon name={card.attributes.faction_id} />
-						</td>
-						<td>
-							<span class="icon-label">
-								<Icon name={card.attributes.card_type_id} size="sm" />
-								{locales(card.attributes.card_type_id)}
+						</Table.Cell>
+						<Table.Cell>
+							<span data-faction-theme={card.attributes.faction_id}>
+								<Icon name={card.attributes.faction_id} size="sm" />
 							</span>
-						</td>
-						<td>
-							<span class="icon-label">
-								{card.attributes.display_subtypes}
-							</span>
-						</td>
-						<td>
+							{locale(card.attributes.faction_id)}
+						</Table.Cell>
+						<Table.Cell>
+							<Icon name={card.attributes.card_type_id} size="sm" />
+							{locale(card.attributes.card_type_id)}
+						</Table.Cell>
+						<Table.Cell>
+							{card.attributes.display_subtypes}
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.cost}
-								<span class="icon-label">
-									{card.attributes.cost}
-									<Icon name="credit" size="sm" />
-								</span>
+								{card.attributes.cost}
+								<Icon name="credit" size="sm" />
 							{/if}
-						</td>
-						<td>
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.trash_cost}
-								<span class="icon-label">
-									{card.attributes.trash_cost}
-									<Icon name="trash-cost" size="sm" />
-								</span>
+								{card.attributes.trash_cost}
+								<Icon name="trash" size="sm" />
 							{/if}
-						</td>
-						<td>
+						</Table.Cell>
+						<Table.Cell>
 							{#if card.attributes.strength}
-								<span class="icon-label">
-									{card.attributes.strength}
-									<Icon name="strength" size="sm" />
-								</span>
+								{card.attributes.strength}
+								<Icon name="strength" size="sm" />
 							{/if}
-						</td>
-					</tr>
+						</Table.Cell>
+					</Table.Row>
 				{/each}
 			</tbody>
 		</table>

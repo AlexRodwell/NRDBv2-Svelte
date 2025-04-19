@@ -1,32 +1,7 @@
 <script lang="ts">
 	interface Props {
-		name: // | 'upgrade'
-		// | 'operation'
-		// | 'event'
-		// | 'identity'
-		// | 'agenda'
-		// | 'ice'
-		// | 'asset'
-		// | 'hardware'
-		// | 'program'
-		// | 'resource'
-		// | 'weyland_consortium'
-		// | 'anarch'
-		// | 'shaper'
-		// | 'nbn'
-		// | 'haas_bioroid'
-		// | 'criminal'
-		// | 'jinteki'
-		// | 'neutral_corp'
-		// | 'neutral_runner'
-		// | 'sunny'
-		// | 'apex'
-		// | 'adam'
-		// | 'cost'
-		// | 'trash'
-		// | 'strength'
-		// | 'agenda';
-		| 'adam'
+		name:
+			| 'adam'
 			| 'anarch'
 			| 'apex'
 			| 'criminal'
@@ -95,12 +70,17 @@
 			| 'certificate'
 			| 'rotation'
 			| 'heart'
+			| 'star'
+			| 'comment'
+			| 'alwaysberunning'
+			| 'external'
 			| string;
 		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'fill' | 'none';
 		class?: string;
 		fallback?: boolean;
 		inline?: boolean;
 		label?: string;
+		fill?: 'theme' | 'current';
 	}
 
 	let {
@@ -109,7 +89,8 @@
 		class: class_list = '',
 		fallback = false,
 		inline = false,
-		label = name
+		label = name,
+		fill = 'theme'
 	}: Props = $props();
 
 	const icons = {
@@ -145,24 +126,25 @@
 		haas_bioroid: 'faction-haas-bioroid',
 		jinteki: 'faction-jinteki',
 		nbn: 'faction-nbn',
-		neutral_corp: 'faction-neutral-corp',
-		neutral_runner: 'faction-neutral-runner',
+		neutral_corp: 'faction-neutral',
+		neutral_runner: 'faction-neutral',
 		neutral: 'faction-neutral',
 		shaper: 'faction-shaper',
 		sunny_lebeau: 'faction-sunny-lebeau',
 		weyland_consortium: 'faction-weyland-consortium',
 		agenda_points_simple: 'game-agenda-points-simple',
 		agenda_points: 'game-agenda-points',
-		click: 'game-click',
-		credit: 'game-credit',
+		click: 'click',
+		credit: 'credit',
 		interrupt: 'game-interrupt',
 		link: 'game-link',
 		mu: 'game-mu',
 		rez_cost: 'game-rez-cost',
-		strength: 'game-strength',
+		strength: 'strength',
 		subroutine: 'subroutine',
-		trash_ability: 'game-trash-ability',
-		trash_cost: 'game-trash-cost',
+		trash_ability: 'trash',
+		trash_cost: 'trash',
+		trash: 'trash',
 		ashes: 'set-ashes',
 		borealis: 'set-borealis',
 		core_set: 'set-core-set',
@@ -208,7 +190,11 @@
 		runner_identity: 'type-identity',
 		certificate: 'certificate',
 		rotation: 'rotation',
-		heart: 'heart'
+		heart: 'heart',
+		star: 'star',
+		comment: 'comment',
+		alwaysberunning: 'alwaysberunning',
+		external: 'external',
 	};
 
 	let class_size = $state<string>('h-12 w-12');
@@ -242,7 +228,11 @@
 
 {#snippet svg_path(value: string)}
 	<svg
-		class={['fill-theme', class_size, inline ? 'inline-flex' : '', class_list]}
+		class={[
+			fill === 'theme' ? 'fill-theme' : 'fill-current',
+			class_size, 
+			inline ? 'inline-flex' : '', class_list
+		]}
 		aria-label={label}
 	>
 		<use xlink:href="#icon-{value}"></use>
@@ -253,4 +243,6 @@
 	{@render svg_path(icons[name])}
 {:else if fallback}
 	{@render svg_path(icons['neutral'])}
+{:else}
+	<span>No icon found for {name}</span>
 {/if}

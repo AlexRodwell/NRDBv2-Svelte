@@ -3,7 +3,7 @@
 
 	interface Props {
 		variant?: 'default' | 'pill' | 'outline';
-		type?: 'button' | 'submit';
+		type?: 'button' | 'submit' | 'p';
 		href?: string;
 		children?: any;
 		class?: string;
@@ -37,6 +37,10 @@
 	<a {href} class={[classes, classList]} {...rest}>
 		{@render children()}
 	</a>
+{:else if type === 'p'}
+	<p class={[classes, classList]} {...rest}>
+		{@render children()}
+	</p>
 {:else}
 	<Button.Root {type} class={[classes, classList]} {...rest}>
 		{@render children()}

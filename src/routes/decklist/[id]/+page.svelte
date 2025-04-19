@@ -5,44 +5,27 @@
 	import Table from '$lib/components/table/Wrapper.svelte';
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import Header from '$lib/components/Header.svelte';
-	import { locales } from '$lib/i18n';
+	import { locale } from '$lib/i18n';
 	import Influence from '$lib/components/Influence.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import { Tabs, DropdownMenu } from 'bits-ui';
 	import Notes from '$lib/components/Notes.svelte';
-	import { action } from '$lib/utils';
-
+	import { action, group_cards_by_type, card_quantity } from '$lib/utils';
+	import { tooltip } from '$lib/actions';
+	import Meta from '$lib/components/cards/Meta.svelte';
+	import DecklistContent from '$lib/components/decklist/Content.svelte';
+	import { page } from '$app/state';
+	import { image } from '$lib/api';
+	import { corp_identity } from '$lib/paraglide/messages';
+	
 	interface Props {
 		data: any;
 	}
 
 	let { data }: Props = $props();
 
-	const count = data.cards.reduce((accumulator, group) => {
-		accumulator[group.type] = group.data
-			.map((card) => {
-				card.quantity = data.meta.attributes.card_slots[card.id] || 0;
-				return card;
-			})
-			.reduce((sum, card) => sum + card.quantity, 0);
-		return accumulator;
-	}, {});
-
-	// const action = async (
-	// 	action: 'download' | 'export',
-	// 	format: 'json' | 'txt' | 'otcgn' | 'bbcode' | 'md' | 'jinteki.net'
-	// ) => {
-	// 	const response = await fetch(
-	// 		`/api/decklist/${action}?type=decklist&id=${data.meta.id}&format=${format}`
-	// 	);
-	// 	const blob = await response.blob();
-	// 	const url = URL.createObjectURL(blob);
-	// 	const a = document.createElement('a');
-	// 	a.href = url;
-	// 	a.download = `decklist.${format}`;
-	// 	a.click();
-	// 	URL.revokeObjectURL(url);
-	// };
+	const grouped_cards = group_cards_by_type(data.cards);
+    const count = card_quantity(data.meta, grouped_cards);
 
 	const share = async () => {
 		try {
@@ -55,7 +38,22 @@
 			console.error('Error sharing:', err);
 		}
 	};
+
+	const print = () => {
+		window.print()
+	}
 </script>
+
+<Meta>
+	<title>{data.meta.attributes.name}</title>
+	<meta name="description" content={`A ${locale(data.identity.attributes.faction_id)} deck by ${data.meta.attributes.user_id}`} />
+	<meta name="og:title" content={data.meta.attributes.name} />
+	<meta name="og:description" content={`A ${locale(data.identity.attributes.faction_id)} deck by ${data.meta.attributes.user_id}`} />
+	<!-- <meta name="og:image" content={data.identity.attributes.image_url} /> -->
+	<meta name="og:url" content={page.url} />
+	<meta name="og:updated_time" content={data.meta.attributes.updated_at} />
+	<meta name="og:published_time" content={data.meta.attributes.created_at} />
+</Meta>
 
 <Header icon={data.meta.attributes.faction_id} title={data.meta.attributes.name} inline={false}>
 	{#snippet subtitle()}
@@ -98,9 +96,11 @@
 						actions
 					</Tabs.Trigger>
 				</div>
-				<div>
+				<div class="flex flex-row gap-2">
 					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>Download</DropdownMenu.Trigger>
+						<DropdownMenu.Trigger>
+							<Button type="p" variant="outline">Download</Button>
+						</DropdownMenu.Trigger>
 						<DropdownMenu.Portal>
 							<DropdownMenu.Content
 								class="border-muted bg-background shadow-popover outline-hidden focus-visible:outline-hidden w-[229px] rounded-xl border px-1 py-1.5"
@@ -116,7 +116,9 @@
 					</DropdownMenu.Root>
 
 					<DropdownMenu.Root>
-						<DropdownMenu.Trigger>Export</DropdownMenu.Trigger>
+						<DropdownMenu.Trigger>
+							<Button type="p" variant="outline">Export</Button>
+						</DropdownMenu.Trigger>
 						<DropdownMenu.Portal>
 							<DropdownMenu.Content
 								class="border-muted bg-background shadow-popover outline-hidden focus-visible:outline-hidden w-[229px] rounded-xl border px-1 py-1.5"
@@ -131,7 +133,7 @@
 						</DropdownMenu.Portal>
 					</DropdownMenu.Root>
 
-					<Button variant="outline" onclick={() => window.print()}>Print</Button>
+					<Button variant="outline" onclick={() => print()}>Print</Button>
 					<Button variant="outline" onclick={() => share()}>share</Button>
 				</div>
 			</div>
@@ -161,8 +163,8 @@
 				<Tabs.Content value="default">
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<div class="max-w-32">
-								<Card card={data.identity} />
+							<div class="max-w-32" use:tooltip={data.identity}>
+								<Card data={data.identity} />
 							</div>
 							<div>
 								<p>Side: {data.identity.attributes.side_id}</p>
@@ -171,7 +173,7 @@
 										<span data-faction-theme={data.identity.attributes.faction_id}>
 											<Icon name={data.identity.attributes.faction_id} />
 										</span>
-										<p>{locales(data.identity.attributes.faction_id)}</p>
+										<p>{locale(data.identity.attributes.faction_id)}</p>
 									</div>
 									<p>{data.identity.attributes.title}</p>
 									<p>{data.identity.attributes.text}</p>
@@ -179,30 +181,8 @@
 									<p>deck limit: {data.identity.attributes.minimum_deck_size} (minimum)</p>
 								</div>
 							</div>
-							<div class="columns columns-2 gap-4">
-								{#each data.cards as group}
-									<div class="grid gap-2" style="break-inside: avoid-column;">
-										<div class="flex flex-row items-center gap-2">
-											<Icon name={group.type.toLowerCase()} size="sm" />
-											<h2 class="text-lg">{locales(group.type)} ({count[group.type]})</h2>
-										</div>
-										<div class="grid gap-2">
-											{#each group.data as card}
-												<a href="/cards/{card.id}" class="flex flex-row items-center gap-2">
-													{data.meta.attributes.card_slots[card.id]}x {card.attributes.title}
-													<Influence
-														value={card.attributes.influence_cost}
-														faction={card.attributes.faction_id}
-														inline={true}
-														text={false}
-														total={false}
-													/>
-												</a>
-											{/each}
-										</div>
-									</div>
-								{/each}
-							</div>
+							<p>Decklist contents:</p>
+							<DecklistContent meta={data.meta} cards={data.cards} />
 						</div>
 						<div>
 							<Notes note={data.meta.attributes.notes} />
@@ -211,19 +191,21 @@
 				</Tabs.Content>
 				<Tabs.Content value="cards" class="select-none pt-3">
 					<div class="grid gap-8">
-						{#each data.cards as group}
+						{#each grouped_cards as group}
 							<div class="grid gap-4">
 								<div class="flex flex-row items-center gap-2">
 									<Icon name={group.type.toLowerCase()} />
-									<h2 class="text-2xl">{locales(group.type)} ({count[group.type]})</h2>
+									<h2 class="text-2xl">{locale(group.type)} ({count[group.type]})</h2>
 								</div>
 								<div class="grid grid-cols-8 gap-4">
 									{#each group.data as card}
-										<Card
-											{card}
-											quantity={data.meta.attributes.card_slots[card.id]}
-											stacked={true}
-										/>
+										<div use:tooltip={card}>
+											<Card
+												data={card}
+												quantity={data.meta.attributes.card_slots[card.id]}
+												stacked={true}
+											/>
+										</div>
 									{/each}
 								</div>
 							</div>
@@ -231,11 +213,11 @@
 					</div>
 				</Tabs.Content>
 				<Tabs.Content value="table" class="select-none pt-3 grid gap-8">
-					{#each data.cards as group}
+					{#each grouped_cards as group}
 						<div class="grid gap-2">
 							<div class="flex flex-row items-center gap-2">
 								<Icon name={group.type.toLowerCase()} />
-								<h2 class="text-2xl">{locales(group.type)} ({count[group.type]})</h2>
+								<h2 class="text-2xl">{locale(group.type)} ({count[group.type]})</h2>
 							</div>
 							<Table
 								headColumns={[
@@ -261,7 +243,7 @@
 												</span>
 											</td>
 											<td>
-												<a href="/cards/{card.id}">
+												<a href="/cards/{card.id}" use:tooltip={card}>
 													{card.attributes.title}
 												</a>
 											</td>
@@ -271,23 +253,20 @@
 														value={card.attributes.influence_cost}
 														faction={card.attributes.faction_id}
 													/>
-												{:else}
-													<span class="not-applicable">-</span>
 												{/if}
 											</td>
 											<td data-faction-theme={card.attributes.faction_id}>
 												{#if card.attributes.faction_id}
-													<a href="/factions/{card.attributes.faction_id}">
+													<a href="/faction/{card.attributes.faction_id}" title={locale(card.attributes.faction_id)}>
 														<Icon name={card.attributes.faction_id} size="sm" />
+														{locale(card.attributes.faction_id)}
 													</a>
-												{:else}
-													<span class="not-applicable">-</span>
 												{/if}
 											</td>
 											<!-- <td>
 												<span class="icon-label">
 													<Icon name={card.attributes.card_type_id} size="sm" />
-													{locales(card.attributes.card_type_id)}
+													{locale(card.attributes.card_type_id)}
 												</span>
 											</td> -->
 											<td>{card.attributes.display_subtypes}</td>
@@ -338,3 +317,13 @@
 		<Tabs.Content value="actions">actions</Tabs.Content>
 	</Tabs.Root>
 </Wrapper>
+
+<div class="printer not-print:hidden">
+	{#each [data.identity, ...data.cards] as card}
+		<!-- Get the quantity of the card from the meta data (decklist), add copies for total quantity -->
+		{#each Array(data.meta.attributes.card_slots[card.id]) as _}
+			<!-- TODO: these printings might include FFG art, which we probably can't allow to be printed, we need to add some logic, at some step to ensure we're using NSG art -->
+			<div style="background-image: url({image(card.attributes.printing_ids)});"></div>
+		{/each}
+	{/each}
+</div>

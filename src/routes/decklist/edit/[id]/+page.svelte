@@ -4,7 +4,7 @@
     import Button from "$lib/components/Button.svelte";
     import type { Card } from '$lib/types'
     import Influence from "$lib/components/Influence.svelte";
-    import { locales } from "$lib/i18n";
+    import { locale } from "$lib/i18n";
 
     interface Props {
 		data: any;
@@ -24,12 +24,12 @@
 </script>
 
 <Wrapper class="grid grid-cols-2">
-    <div class="columns columns-2 gap-4">
+    <div class="columns-group columns columns-2 gap-4">
         {#each data.cards as group}
             <div class="grid gap-2" style="break-inside: avoid-column;">
                 <div class="flex flex-row items-center gap-2">
                     <Icon name={group.type.toLowerCase()} size="sm" />
-                    <h2 class="text-lg">{locales(group.type)} ({count[group.type]})</h2>
+                    <h2 class="text-lg">{locale(group.type)} ({count[group.type]})</h2>
                 </div>
                 <div class="grid gap-2">
                     {#each group.data as card}

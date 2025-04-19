@@ -19,22 +19,10 @@ export async function load({ params, parent }) {
 
     const sets = await query(`card_sets?filter[card_cycle_id]=${_sets.join(',')}`);
 
-    const sortedCards = cards.data.reduce((acc, card) => {
-        const typeId = card.attributes.card_type_id;
-
-        if (!acc.find(item => item.type === typeId)) {
-            acc.push({ type: typeId, data: [card] });
-        } else {
-            acc.find(item => item.type === typeId).data.push(card);
-        }
-
-        return acc;
-    }, []);
-
     return {
         meta: decklist.data[0],
         identity: identity.data,
-        cards: sortedCards,
+        cards: cards.data,
         sets: sets.data
     };
 }

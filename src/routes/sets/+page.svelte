@@ -3,8 +3,8 @@
 	import Icon from '$lib/components/icons/Icon.svelte';
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import { format_date } from '$lib/utils';
-	import { locales } from '$lib/i18n';
-
+	import { locale } from '$lib/i18n';
+	import * as Table from '$lib/components/table';
 	interface Props {
 		data: any;
 	}
@@ -23,11 +23,11 @@
 	<table class="results mt-5">
 		<thead>
 			<tr>
-				<th>{locales('name')}</th>
-				<th>{locales('cards')}</th>
-				<th>{locales('release_date')}</th>
-				<th>{locales('publisher')}</th>
-				<th>{locales('legality')}</th>
+				<th>{locale('name')}</th>
+				<th>{locale('cards')}</th>
+				<th>{locale('release_date')}</th>
+				<th>{locale('publisher')}</th>
+				<th>{locale('legality')}</th>
 				<th>x</th>
 				<th>y</th>
 			</tr>
@@ -35,7 +35,7 @@
 		<tbody>
 			{#each data.cycles.data as cycle}
 				<tr>
-					<td>
+					<Table.Cell>
 						<a href={`/cycles/${cycle.id}`}>{cycle.attributes.name}</a>
 						<!-- {#if cycle.relationships['card_sets'].data.length === 1}
 								{#each cycle.relationships['card_sets'].data as set}
@@ -48,40 +48,40 @@
 									{cycle.attributes.name}
 								</a>
 							{/if} -->
-					</td>
-					<td>{cycle.attributes.size}</td>
-					<td>{format_date(cycle.attributes.date_release)}</td>
-					<td>
+					</Table.Cell>
+					<Table.Cell>{cycle.attributes.size}</Table.Cell>
+					<Table.Cell>{format_date(cycle.attributes.date_release)}</Table.Cell>
+					<Table.Cell>
 						<label class="icon-label">
 							<Icon name={cycle.attributes.released_by} size="sm" />
-							{locales(cycle.attributes.released_by)}
+							{locale(cycle.attributes.released_by)}
 						</label>
-					</td>
-					<td>Standard</td>
-					<td>Startup</td>
-					<td>Eternal</td>
+					</Table.Cell>
+					<Table.Cell>Standard</Table.Cell>
+					<Table.Cell>Startup</Table.Cell>
+					<Table.Cell>Eternal</Table.Cell>
 				</tr>
 				{#if cycle.attributes.card_set_ids.length > 1}
 					{#each cycle.attributes.card_set_ids as set_id}
 						{#each data.sets.data.filter((s: any) => s.id === set_id) as set}
 							<tr>
-								<td>
+								<Table.Cell>
 									<span class="icon-label">
 										<Icon name="subroutine" size="sm" />
 										<a href="/sets/{set.id}">{set.attributes.name}</a>
 									</span>
-								</td>
-								<td>{set.attributes.size}</td>
-								<td>{set.attributes.date_release}</td>
-								<td>
+								</Table.Cell>
+								<Table.Cell>{set.attributes.size}</Table.Cell>
+								<Table.Cell>{set.attributes.date_release}</Table.Cell>
+								<Table.Cell>
 									<span class="icon-label">
 										<Icon name={cycle.attributes.released_by} size="sm" />
-										{locales(cycle.attributes.released_by)}
+										{locale(cycle.attributes.released_by)}
 									</span>
-								</td>
-								<td>Standard</td>
-								<td>Startup</td>
-								<td>Eternal</td>
+								</Table.Cell>
+								<Table.Cell>Standard</Table.Cell>
+								<Table.Cell>Startup</Table.Cell>
+								<Table.Cell>Eternal</Table.Cell>
 							</tr>
 						{/each}
 					{/each}
