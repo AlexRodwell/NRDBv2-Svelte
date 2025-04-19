@@ -1,7 +1,5 @@
 name: nrdbv2
 
-version: '3.8'
-
 services:
   app:
     build:
@@ -10,9 +8,9 @@ services:
     ports:
       - "3434:3434"
     environment:
+      NODE_ENV: production
       PUBLIC_API_URL: https://api-preview.netrunnerdb.com/api/v3/public
     restart: unless-stopped
     volumes:
-      - .:/app:delegated
       - /app/node_modules
     stdin_open: true

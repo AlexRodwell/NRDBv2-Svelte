@@ -26,4 +26,4 @@ RUN pnpm build
 EXPOSE 3434
 
 # Start the app in production mode
-CMD ["pnpm", "preview", "--port", "3434", "--host", "0.0.0.0"]
+CMD ["node", "./output/index.js"]

@@ -37,7 +37,7 @@ importers:
         specifier: ^1.45.3
         version: 1.51.1
       '@sveltejs/adapter-node':
-        specifier: ^5.2.9
+        specifier: ^5.2.12
         version: 5.2.12(@sveltejs/kit@2.20.4(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.25.9)(vite@5.4.17(@types/node@22.14.1)(lightningcss@1.29.3)))(svelte@5.25.9)(vite@5.4.17(@types/node@22.14.1)(lightningcss@1.29.3)))
       '@sveltejs/kit':
         specifier: ^2.5.27
