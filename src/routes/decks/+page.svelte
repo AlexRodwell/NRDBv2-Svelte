@@ -31,7 +31,7 @@
                 href={`/decklist/create?side=${side}`}
                 variant="outline"
             >
-                <Icon name={side} size="sm" />
+                <Icon name={`${side}_identity`} size="sm" />
                 <p>Create new {side} deck</p>
             </Button>
         {/each}
