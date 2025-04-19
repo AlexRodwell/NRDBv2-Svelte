@@ -1,10 +1,9 @@
-/*
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 import type { ApiResponse, Faction, Card } from '$lib/types';
 
-export const load: PageServerLoad = async () => {
+export const load = async () => {
     const factions: ApiResponse<Faction[]> = await query(`factions`);
     const cards: ApiResponse<Card[]> = await query(`cards?page[size]=2500`);
 
@@ -25,7 +24,7 @@ export const load: PageServerLoad = async () => {
                 cost: card.attributes.cost,
                 memory_cost: card.attributes.memory_cost,
                 trash_cost: card.attributes.trash_cost,
-                side_id	: card.attributes.side_id,
+                side_id: card.attributes.side_id,
             }
         };
     });
@@ -34,5 +33,4 @@ export const load: PageServerLoad = async () => {
         factions: factions.data,
         cards: cards_formatted
     };
-};
-*/
+}
