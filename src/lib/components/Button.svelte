@@ -2,7 +2,7 @@
 	import { Button } from 'bits-ui';
 
 	interface Props {
-		variant?: 'default' | 'pill' | 'outline';
+		variant?: 'default' | 'outline' | 'ghost';
 		type?: 'button' | 'submit' | 'p';
 		href?: string;
 		children?: any;
@@ -19,17 +19,17 @@
 		...rest
 	}: Props = $props();
 
-	let classes = $state('flex flex-row items-center gap-1 px-4 py-2 rounded-md cursor-pointer');
+	let classes = $state('flex flex-row items-center justify-center gap-1 px-4 py-2 rounded-md cursor-pointer border');
 
 	switch (variant) {
-		case 'pill':
-			classes += ' rounded-full';
-			break;
 		case 'outline':
-			classes += ' border border-white';
+			classes += ' border-border text-text';
+			break;
+		case 'ghost':
+			classes += ' bg-border border-border text-white';
 			break;
 		default:
-			classes += ' bg-white text-black';
+			classes += ' bg-white border-white text-black';
 	}
 </script>
 

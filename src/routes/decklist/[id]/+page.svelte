@@ -16,7 +16,8 @@
 	import DecklistContent from '$lib/components/decklist/Content.svelte';
 	import { page } from '$app/state';
 	import { image } from '$lib/api';
-	import { corp_identity } from '$lib/paraglide/messages';
+	import DecklistHeroHeader from '$lib/components/decklist/Header.svelte';
+	import Box from '$lib/components/Box.svelte';
 	
 	interface Props {
 		data: any;
@@ -66,7 +67,7 @@
 	{/snippet}
 </Header>
 
-<Wrapper class="grid gap-8 content-start">
+<Wrapper>
 	<Tabs.Root value="decklist">
 		<Tabs.List class="flex space-between">
 			<div class="grid grid-cols-[1fr_auto] space-between w-full">
@@ -161,27 +162,11 @@
 					</Tabs.Trigger>
 				</Tabs.List>
 				<Tabs.Content value="default">
-					<div class="grid grid-cols-2 gap-4">
-						<div>
-							<div class="max-w-32" use:tooltip={data.identity}>
-								<Card data={data.identity} />
-							</div>
-							<div>
-								<p>Side: {data.identity.attributes.side_id}</p>
-								<div>
-									<div class="icon-label">
-										<span data-faction-theme={data.identity.attributes.faction_id}>
-											<Icon name={data.identity.attributes.faction_id} />
-										</span>
-										<p>{locale(data.identity.attributes.faction_id)}</p>
-									</div>
-									<p>{data.identity.attributes.title}</p>
-									<p>{data.identity.attributes.text}</p>
-									<p>influence_limit: {data.identity.attributes.influence_limit}</p>
-									<p>deck limit: {data.identity.attributes.minimum_deck_size} (minimum)</p>
-								</div>
-							</div>
-							<p>Decklist contents:</p>
+					<div class="grid grid-cols-2 gap-12 items-start">
+						<div class="grid gap-8">
+							<Box>
+								<DecklistHeroHeader identity={data.identity} decklist={data.meta} />
+							</Box>
 							<DecklistContent meta={data.meta} cards={data.cards} />
 						</div>
 						<div>
@@ -309,7 +294,10 @@
 		<Tabs.Content value="sets">
 			<div class="grid gap-2">
 				{#each data.sets as set}
-					<a href="/sets/{set.id}">{set.attributes.name}</a>
+					<a class="icon-label" href="/sets/{set.id}">
+						<Icon name={set.id} size="sm" />
+						{set.attributes.name} ({set.id})
+					</a>
 				{/each}
 			</div>
 		</Tabs.Content>

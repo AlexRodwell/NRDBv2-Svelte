@@ -1,8 +1,7 @@
 import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 
-export async function load({ params, parent }) {
-
+export async function load({ params }) {
     const cycle = await query(`card_cycles/${params.name}`);
     const cards = await query(`cards?filter[card_cycle_id]=borealis`);
 

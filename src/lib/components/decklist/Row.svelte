@@ -13,18 +13,15 @@
     let { data }: Props = $props();
 </script>
 
-<Box class="relative grid grid-cols-[5fr_1fr] @max-md/decklist:grid-cols-1 gap-8 overflow-hidden">
-
-    <Icon name={data.attributes.faction_id} size="none" class="!absolute top-0 bottom-0 -left-8 opacity-[2%] scale-200 pointer-events-none" />
-    
+<Box class="relative grid grid-cols-[5fr_1fr] @max-md/decklist:p-4 @max-md/decklist:grid-cols-1 gap-8 overflow-hidden z-10">
     <div class="grid gap-2">
-        <a href="/faction/{data.attributes.faction_id}" class="icon-label">
+        <a href="/faction/{data.attributes.faction_id}" class="icon-label @max-md/decklist:text-sm">
             <span data-faction-theme={data.attributes.faction_id}>
                 <Icon name={data.attributes.faction_id} size="sm" />
             </span>
             {locale(data.attributes.faction_id)}
         </a>
-        <a href="/decklist/{data.id}" class="text-xl">
+        <a href="/decklist/{data.id}" class="text-xl @max-md/decklist:text-base font-semibold">
             {data.attributes.name}
         </a>
         <div class="flex flex-row gap-4">
@@ -67,4 +64,5 @@
             </div>
         </div>
     </div>
+    <Icon name={data.attributes.faction_id} size="none" fill="current" class="!absolute top-0 bottom-0 -left-8 opacity-[1%] scale-200 pointer-events-none -z-10" />
 </Box>

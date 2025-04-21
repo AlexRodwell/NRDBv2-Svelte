@@ -1,9 +1,7 @@
 import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 
-export async function load({ params, parent }) {
-
-    // card_sets
+export async function load() {
     const cycles = await query('card_cycles?sort=-date_release&page[size]=999');
     const sets = await query('card_sets?sort=-date_release&page[size]=999');
 

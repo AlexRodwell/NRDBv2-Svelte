@@ -74,6 +74,10 @@
 			| 'comment'
 			| 'alwaysberunning'
 			| 'external'
+			| 'crimson_dust'
+			| 'uprising'
+			| 'system_update_2019'
+			| 'system_update_2021'
 			| string;
 		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'fill' | 'none';
 		class?: string;
@@ -136,7 +140,7 @@
 		agenda_points: 'game-agenda-points',
 		click: 'click',
 		credit: 'credit',
-		interrupt: 'game-interrupt',
+		interrupt: 'interrupt',
 		link: 'game-link',
 		mu: 'game-mu',
 		rez_cost: 'game-rez-cost',
@@ -168,9 +172,7 @@
 		salvaged_memories: 'set-salvaged-memories',
 		sansan: 'set-sansan',
 		spin: 'set-spin',
-		system_core_2019: 'set-system-core-2019',
 		system_gateway: 'set-system-gateway',
-		system_update_2021: 'set-system-update-2021',
 		terminal_directive: 'set-terminal-directive',
 		agenda: 'type-agenda',
 		asset: 'type-asset',
@@ -184,8 +186,8 @@
 		upgrade: 'type-upgrade',
 		null_signal_games: 'faction-neutral',
 		nsg: 'faction-neutral',
-		fantasy_flight_games: 'faction-fantasy-flight-games',
-		ffg: 'faction-fantasy-flight-games',
+		fantasy_flight_games: 'fantasy-flight-games',
+		ffg: 'fantasy-flight-games',
 		corp_identity: 'type-identity',
 		runner_identity: 'type-identity',
 		certificate: 'certificate',
@@ -195,6 +197,10 @@
 		comment: 'comment',
 		alwaysberunning: 'alwaysberunning',
 		external: 'external',
+		crimson_dust: 'set-crimson_dust',
+		uprising: 'set-uprising',
+		system_core_2019: 'set-system_core_2019',
+		system_update_2021: 'set-system_update_2021'
 	};
 
 	let class_size = $state<string>('h-12 w-12');

@@ -8,9 +8,9 @@
     --tooltip: 520px;
     --breakpoint-3xl: 1920px;
 
-    --color-background: light-dark(#F4F4F6, #0C0C0D);
-    --color-foreground: light-dark(#FFF, #17171C);
-    --color-border: light-dark(#E0E0E0, #262626);
+    --color-background: light-dark(#F4F4F6, #101010);
+    --color-foreground: light-dark(#FFF, #141414);
+    --color-border: light-dark(#E0E0E0, #222222);
     --color-text: light-dark(#000000, #FFFFFF);
 
     --color-faction-adam: light-dark(#a89c33, #a89c33);
@@ -232,7 +232,8 @@
         display: grid; 
         gap: calc(var(--spacing) * 4);
         grid-template-columns: auto 1fr;
-        align-items: start;
+        /* align-items: start; */
+        width: 100%;
         max-width: var(--tooltip);
         left: var(--left);
         top: var(--top);
@@ -321,6 +322,7 @@
         display: grid;
         gap: var(--spacing);
         align-content: start;
+        grid-template-rows: auto 1fr;
     }
 
     .card img:nth-of-type(2) {

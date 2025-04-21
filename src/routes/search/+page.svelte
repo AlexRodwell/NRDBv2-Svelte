@@ -13,7 +13,7 @@
 
 <Header title="Advanced Search" inline={false} />
 
-<Wrapper class="grid grid-cols-2 gap-8 content-start items-start">
+<Wrapper class="grid-cols-2">
 
     <label class="grid gap-1">
         <span>Side (corp, runner)</span>

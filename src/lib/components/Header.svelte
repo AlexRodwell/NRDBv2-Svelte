@@ -43,7 +43,7 @@
 			</div>
 		</div>
 		{#if actions}
-			<div>
+			<div class="flex flex-row gap-2 items-center">
 				{@render actions?.()}
 			</div>
 		{/if}

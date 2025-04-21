@@ -29,10 +29,10 @@
 		</p>
 	{/snippet}
 	{#snippet actions()}
-		<Button href="/sets/prev" variant="pill">
+		<Button href="/sets/prev" variant="outline">
 			{locale('previous')}
 		</Button>
-		<Button href="/sets/next" variant="pill">
+		<Button href="/sets/next" variant="outline">
 			{locale('next')}
 		</Button>
 	{/snippet}

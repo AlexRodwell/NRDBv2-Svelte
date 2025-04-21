@@ -5,20 +5,23 @@
 	import Influence from '$lib/components/Influence.svelte';
 	import Wrapper from '$lib/components/Wrapper.svelte';
 	import Icon from '$lib/components/icons/Icon.svelte';
-	import type { Card as TCard, Printing } from '$lib/types';
+	import type { Card as TCard, Printing, Review as TReview, Rulings } from '$lib/types';
 	import { locale } from '$lib/i18n';
-	import { format_date } from '$lib/utils';
 	import Box from '$lib/components/Box.svelte';
 	import { image } from '$lib/api';
 	import Button from '$lib/components/Button.svelte';
 	import Ruling from '$lib/components/Ruling.svelte';
 	import Review from '$lib/components/Review.svelte';
+	import { Tabs } from 'bits-ui';
 
 	interface Props {
 		data: {
 			card: TCard;
 			printings: Printing[];
-			rulings: {}[];
+			rulings: Rulings[];
+			reviews: TReview[];
+			previous: string | null;
+			next: string | null;
 		};
 	}
 
@@ -52,7 +55,7 @@
 	<img src={image(card.attributes.printing_ids[0])} alt="a" />
 </div>
 
-<Wrapper class="grid gap-12">
+<Wrapper>
 	<section class="grid grid-cols-[1fr_1.5fr_1.5fr] gap-12">
 		<div>
 			<Card data={card} details={false} />
@@ -90,7 +93,7 @@
 						<td>
 							<a href="/faction/{card.attributes.faction_id}" title={locale(card.attributes.faction_id)} class="icon-label">
 								<span data-faction-theme={card.attributes.faction_id}>
-									<Icon name={card.attributes.faction_id} />
+									<Icon name={card.attributes.faction_id} size="sm" />
 								</span>
 								{locale(card.attributes.faction_id)}
 							</a>
@@ -164,26 +167,57 @@
 			<p>Printings</p>
 		</Box>
 	</section>
-
-	<section class="grid gap-4">
-		{#if rulings.length > 0}
-			<h2 class="text-2xl">{locale('rulings')}</h2>
-			<div class="grid gap-4">
-				{#each rulings as ruling}
-					<Ruling data={ruling} />
+	
+	<div class="pt-6">
+		<Tabs.Root value="reviews">
+			<Tabs.List>
+				<Tabs.Trigger
+					value="reviews"
+					class="bg-transparent py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-black"
+				>
+					Reviews
+				</Tabs.Trigger
+				>
+				<Tabs.Trigger
+					value="rulings"
+					class="bg-transparent py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-black"
+				>
+					Rulings
+				</Tabs.Trigger>
+				<Tabs.Trigger
+					value="alt_arts"
+					class="bg-transparent py-2 px-4 data-[state=active]:bg-white data-[state=active]:text-black"
+				>
+					Alternative Art
+				</Tabs.Trigger>
+			</Tabs.List>
+			<Tabs.Content value="reviews" class="select-none pt-3">
+				<h2 class="text-2xl">{locale('reviews')}</h2>
+				<div class="grid gap-4">
+					{#each reviews as review}
+						<Review data={review} />
+					{/each}
+				</div>
+			</Tabs.Content>
+			<Tabs.Content value="rulings" class="select-none pt-3">
+				{#if rulings.length > 0}
+					<h2 class="text-2xl">{locale('rulings')}</h2>
+					<div class="grid gap-4">
+						{#each rulings as ruling}
+							<Ruling data={ruling} />
+						{/each}
+					</div>
+				{:else}
+					<p>No rulings yet for this card.</p>
+				{/if}
+			</Tabs.Content>
+			<Tabs.Content value="alt_arts" class="select-none pt-3 grid grid-cols-5 gap-8">
+				{#each printings as printing}
+					<!-- TODO: update <Card> component to better handle printing values (i.e. list the illustrator, what designer released said version, and any other relevant details) -->
+					<Card data={printing} quantity={0} set={true} influence={false} />
 				{/each}
-			</div>
-		{:else}
-			<p>No rulings yet for this card.</p>
-		{/if}
-	</section>
-
-	<section class="grid gap-4">
-		<h2 class="text-2xl">{locale('reviews')}</h2>
-		<div class="grid gap-4">
-			{#each reviews as review}
-				<Review data={review} />
-			{/each}
-		</div>
-	</section>
+				<!-- <pre>{JSON.stringify(printings, null, 2)}</pre> -->
+			</Tabs.Content>
+		</Tabs.Root>
+	</div>
 </Wrapper>

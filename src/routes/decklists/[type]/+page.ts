@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 import type { ApiResponse, Decklist } from '$lib/types.js';
 
-export async function load({ params, parent }) {
+export async function load({ params }) {
 
     // TODO: Update query strings to use real filters to get the expected results
     const routes: { path: string; title: string; query: string; }[] = [

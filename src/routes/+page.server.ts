@@ -1,7 +1,7 @@
 import query from '$lib/api';
 import type { ApiResponse, Card, Decklist } from '$lib/types';
 
-export async function load({ params, parent }) {
+export async function load() {
     const decklists: ApiResponse<Decklist[]> = await query('decklists?page[limit]=10'); // 'decklists?filter[sort]=-created_at&page[limit]=10' // Updated
     const set: ApiResponse<any[]> = await query('card_sets?sort=-date_release&page[size]=1');
 

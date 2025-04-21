@@ -13,7 +13,7 @@
 	let { value, faction, inline = false, text = true, total = true }: Props = $props();
 </script>
 
-<span class={[inline ? 'inline-flex' : 'flex', 'gap-1 items-center']}>
+<span class={[inline ? 'inline-flex' : 'flex', 'gap-1 items-center leading-1']}>
 	{#if text}
 		<span class="text-sm">
 			{value}

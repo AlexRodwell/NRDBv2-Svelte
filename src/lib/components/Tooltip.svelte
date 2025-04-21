@@ -76,12 +76,14 @@
         <div class="w-28">
             <Card data={$tooltip.content} details={false} />
         </div>
-        <div class="grid gap-2">
-            {$tooltip.content?.attributes.title}
-            <span class="icon-label text-sm">
-                <Icon name={$tooltip.content?.attributes.card_type_id} size="xs" />
-                {locale($tooltip.content?.attributes.card_type_id)}
-            </span>
+        <div class="grid gap-2 grid-rows-[auto_1fr]">
+            <div>
+                <p>{$tooltip.content?.attributes.title}</p>
+                <span class="icon-label text-sm">
+                    <Icon name={$tooltip.content?.attributes.card_type_id} size="xs" />
+                    {locale($tooltip.content?.attributes.card_type_id)}
+                </span>
+            </div>
             {#if $tooltip.content.attributes?.text}
                 <div data-faction-theme={$tooltip.content.attributes.faction_id} class="pl-2 border-l border-l-(--theme)">
                     <FormatText text={$tooltip.content.attributes.text} />

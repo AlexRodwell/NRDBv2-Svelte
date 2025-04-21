@@ -12,13 +12,13 @@
 	let { data }: Props = $props();
 </script>
 
-<Wrapper class="grid gap-12">
+<Wrapper>
 	<Factions />
 	<article class="grid grid-cols-[3fr_1fr] gap-8 items-start">
 		<main class="">
 			<HeroDecklist identity={data.decks.weekly.identity} decklist={data.decks.weekly.decklist} cards={data.decks.weekly.cards} />
 		</main>
-		<aside class="">
+		<aside class="grid gap-8">
 			{#if data.upcoming_set}
 				<Box>
 					<p>Upcoming set</p>
@@ -39,14 +39,16 @@
 				</Box>
 			{/if}
 
-			{#if data?.decks?.latest.length > 0}
-				<p>Latest decks</p>
-				<div class="@container/decklist grid gap-2">
-					{#each data.decks.latest as latest}
-						<DecklistRow data={latest} />
-					{/each}
-				</div>
-			{/if}
+			<div class="grid gap-2">
+				{#if data?.decks?.latest.length > 0}
+					<p>Latest decks</p>
+					<div class="@container/decklist grid gap-2">
+						{#each data.decks.latest as latest}
+							<DecklistRow data={latest} />
+						{/each}
+					</div>
+				{/if}
+			</div>
 		</aside>
 	</article>
 </Wrapper>

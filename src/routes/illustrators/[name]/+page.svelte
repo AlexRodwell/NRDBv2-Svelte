@@ -12,7 +12,7 @@
 
 <Header category="Illustrator" title={data.illustrator.data.attributes.name} inline={false} />
 
-<Wrapper class="grid grid-cols-6 gap-8">
+<Wrapper class="grid-cols-6">
 	{#each data.printings.data as printing}
 		<Card data={printing} quantity={0} />
 	{/each}

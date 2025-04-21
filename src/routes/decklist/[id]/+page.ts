@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 
-export async function load({ params, parent }) {
+export async function load({ params }) {
 
     const decklist = await query(`decklists?filter[id]=${params.id}`);
 

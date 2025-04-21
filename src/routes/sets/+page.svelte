@@ -19,7 +19,7 @@
 	inline={false}
 />
 
-<Wrapper class="grid gap-8">
+<Wrapper>
 	<table class="results mt-5">
 		<thead>
 			<tr>

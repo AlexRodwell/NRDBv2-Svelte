@@ -10,7 +10,7 @@
 	let { data }: Props = $props();
 </script>
 
-<Wrapper class="grid gap-4">
+<Wrapper>
     {#each data.rulings as ruling}
         <Ruling data={ruling} />
     {/each}

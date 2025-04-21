@@ -23,7 +23,7 @@
 	}, {});
 </script>
 
-<Wrapper class="grid grid-cols-2">
+<Wrapper class="grid-cols-2">
     <div class="columns-group columns columns-2 gap-4">
         {#each data.cards as group}
             <div class="grid gap-2" style="break-inside: avoid-column;">

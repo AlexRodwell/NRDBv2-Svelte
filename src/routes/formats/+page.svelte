@@ -17,7 +17,7 @@
 	inline={false}
 />
 
-<Wrapper class="grid gap-8">
+<Wrapper class="grid-cols-4">
     {#each data.formats as format}
         <a href="/format/{format.id}">
             <p>{format.attributes.name}</p>

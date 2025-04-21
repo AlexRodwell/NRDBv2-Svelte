@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import query from '$lib/api';
 import type { SidesIds, FactionIds, Card, CardTypeIds, ApiResponse, Decklist } from '$lib/types'
 
-export async function load({ params, parent }) {
+export async function load({ params }) {
 
     const faction = await query(`factions/${params.name}`);
     let card_type_id: Extract<CardTypeIds, 'corp_identity' | 'runner_identity'> = 'corp_identity'

@@ -21,7 +21,7 @@
 	];
 </script>
 
-<Wrapper class="grid gap-16">
+<Wrapper>
 	{#each factions_formatted as side}
 		<div class="grid gap-4">
 			<h2>{locale(side.title)}</h2>

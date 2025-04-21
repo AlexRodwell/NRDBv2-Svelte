@@ -1,14 +1,15 @@
 import { redirect } from '@sveltejs/kit';
 
-export async function load({ params, parent }) {
-    // TODO: Add user authentication check, as this page is only for logged in users
+export async function load() {
+    // TODO: add user authentication check
+    const auth = true;
 
-    // Return users decks
-    if (true) {
-        return {
-            decks: [{}, {}, {}]
-        }
+    if (!auth) {
+        throw redirect(302, '/login');
     }
-
-    throw redirect(302, '/login');
+    
+    // TODO: get all of the users decks from the database
+    return {
+        decks: [{}, {}, {}]
+    }
 }

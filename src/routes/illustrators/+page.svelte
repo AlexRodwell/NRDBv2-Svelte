@@ -8,7 +8,7 @@
 	let { data }: Props = $props();
 </script>
 
-<Wrapper class="gap- grid grid-cols-3">
+<Wrapper class="grid-cols-3">
 	{#each data.illustrators.data as illustrator}
 		<h1>
 			<a href="/illustrators/{illustrator.id}">{illustrator.attributes.name}</a>
